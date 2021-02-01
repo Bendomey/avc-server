@@ -20,8 +20,8 @@ Builds code into binary for production
 
 # Development
 
-- [ ] Bootstrap Server
-- [ ] Connect To Database
+- [x] Bootstrap Server
+- [x] Connect To Database
 
 ## Countries
 
