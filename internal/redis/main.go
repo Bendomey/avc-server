@@ -23,6 +23,6 @@ func Factory() *redis.Client {
 		Password: password, // password set
 		DB:       0,        // use default DB
 	})
-	log.Info("Redis :: Connected successfully")
+	log.Info("[Redis] :: Connected successfully")
 	return rdb
 }
