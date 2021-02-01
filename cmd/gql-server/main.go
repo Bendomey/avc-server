@@ -1,9 +1,9 @@
 package main
 
 import (
-	log "github.com/Bendomey/avc-server/internal/logger"
+	"github.com/Bendomey/avc-server/pkg/server"
 )
 
 func main() {
-	log.Info("Hello world")
+	server.Run()
 }
