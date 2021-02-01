@@ -1,8 +1,22 @@
 # avc-server
-AfricanVentureCounsel - A Modern Legal Solution For African Businesses 
+
+AfricanVentureCounsel - A Modern Legal Solution For African Businesses
 
 # Available Scripts
 
+In the project directory, you can run:
+
+### `make run-dev`
+
+Runs the app in the development mode.
+
+### `make run`
+
+Runs the app in the production mode.
+
+### `make run`
+
+Builds code into binary for production
 
 # Development
 
@@ -10,60 +24,69 @@ AfricanVentureCounsel - A Modern Legal Solution For African Businesses
 - [ ] Connect To Database
 
 ## Countries
+
 - [ ] Create
-- [ ] Update 
+- [ ] Update
 - [ ] Read All
 - [ ] Read one
 - [ ] Delete
 
 ## Users
+
 - [ ] Create User
 - [ ] Create Permission (If Admin)
 - [ ] Create Customer (if Customer)
 - [ ] Create Lawyer (if laywer)
 - [ ] Add user to newsletter subscriber (If already part, update type to user and not anon)
-- [ ] Update 
+- [ ] Update
 - [ ] Read All
 - [ ] Read one
-- [ ] Delete 
+- [ ] Delete
 
 ## Permissions
+
 - [ ] Update Permission
 
 ## NewsLetter Subscribers
+
 - [ ] Create
 - [ ] Delete
 
 ## Newsletters
+
 - [ ] Create
-- [ ] Update 
+- [ ] Update
 - [ ] Read All
 - [ ] Read one
 - [ ] Delete
 
 ## Tags
+
 - [ ] Create
-- [ ] Update 
+- [ ] Update
 - [ ] Read All
 - [ ] Read one
-- [ ] Delete 
+- [ ] Delete
 
 ## BlogPosts
+
 - [ ] Create
-- [ ] Update 
+- [ ] Update
 - [ ] Read All
 - [ ] Read one
 - [ ] Delete
 
 ## Frequently Asked Questions
+
 - [ ] Create
-- [ ] Update 
+- [ ] Update
 - [ ] Read All
 - [ ] Read one
-- [ ] Delete 
+- [ ] Delete
 
 ## Legal Areas
-- [ ] Create 
+
+- [ ] Create
 - [ ] Update
 - [ ] Read All
 - [ ] Read One
