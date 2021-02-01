@@ -22,7 +22,7 @@ func Run() {
 
 	// // Handlers
 	// Simple keep-alive/ping handler
-	http.Handle("/ping", handlers.Ping())
+	http.Handle("/", handlers.Ping())
 
 	//serve a grapqhl endpoint at /graphql
 	http.Handle(gqlPgPath, handlers.PlaygroundHanlder(h))
