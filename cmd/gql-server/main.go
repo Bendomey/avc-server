@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
+	// server invoked here
 	server.Run()
 }
