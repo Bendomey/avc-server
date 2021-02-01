@@ -1,6 +1,6 @@
 # avc-server
 
-AfricanVentureCounsel - A Modern Legal Solution For African Businesses
+African Venture Counsel - A Modern Legal Solution For African Businesses
 
 # Available Scripts
 
