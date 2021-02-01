@@ -14,7 +14,7 @@ func main() {
 	// creates a new ORM instance to send it to our server
 	_, err := orm.Factory()
 	if err != nil {
-		log.Panic(err)
+		log.Panic("[ORM ERR] :: ", err)
 	}
 
 	// server invoked here

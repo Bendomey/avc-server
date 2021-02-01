@@ -5,7 +5,9 @@ go 1.15
 
 require (
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-gormigrate/gormigrate/v2 v2.0.0
 	github.com/go-redis/redis/v8 v8.4.11
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/graphql-go/graphql v0.7.9
 	github.com/graphql-go/graphql-go-handler v0.2.3
 	github.com/heroku/x v0.0.26

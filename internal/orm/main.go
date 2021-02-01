@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	log "github.com/Bendomey/avc-server/internal/logger"
-	// "github.com/Bendomey/avc-server/internal/orm/migration"
+	"github.com/Bendomey/avc-server/internal/orm/migration"
 	"gorm.io/gorm"
 
 	"github.com/Bendomey/avc-server/pkg/utils"
@@ -13,6 +13,7 @@ import (
 )
 
 var host, user, password, dbname, port, sslmode string
+var autoMigrate, seedDB bool
 
 // ORM struct to holds the gorm pointer to db
 type ORM struct {
@@ -25,19 +26,24 @@ func init() {
 	password = utils.MustGet("GORM_PASSWORD")
 	dbname = utils.MustGet("GORM_DBNAME")
 	port = utils.MustGet("GORM_PORT")
+	autoMigrate = utils.MustGetBool("GORM_AUTOMIGRATE")
+	seedDB = utils.MustGetBool("GORM_SEED_DB")
 }
 
 // Factory creates a db connection with the selected dialect and connection string
 func Factory() (*ORM, error) {
 	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", host, user, password, dbname, port, sslmode)), &gorm.Config{})
 	if err != nil {
-		log.Panic("[ORM] err: ", err)
+		return nil, err
 	}
 	orm := &ORM{
 		DB: db,
 	}
-	// err = migration.ServiceAutoMigration(orm.DB)
+	if autoMigrate {
+		migrateErr := migration.ServiceAutoMigration(orm.DB, seedDB)
+		return nil, migrateErr
+	}
 
 	log.Info("[ORM] :: Database connection initialized.")
-	return orm, err
+	return orm, nil
 }
