@@ -14,7 +14,7 @@ Runs the app in the development mode.
 
 Runs the app in the production mode.
 
-### `make run`
+### `make build-server`
 
 Builds code into binary for production
 
