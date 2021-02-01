@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Bendomey/avc-server/internal/handlers"
@@ -28,7 +29,7 @@ func Run() {
 
 	//and serve!
 	log.NewLogger().Printf(`GraphQL server starting up on http://localhost%v`, port)
-	errServer := http.ListenAndServe(port, nil)
+	errServer := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	if errServer != nil {
 		log.Fatalf("Error occured while serving graphql server, %v", errServer)
 	}
