@@ -27,7 +27,6 @@ func Run() {
 	http.Handle(gqlPgPath, handlers.PlaygroundHanlder(h))
 
 	//and serve!
-	port := ":5000"
 	log.NewLogger().Printf(`GraphQL server starting up on http://localhost%v`, port)
 	errServer := http.ListenAndServe(port, nil)
 	if errServer != nil {
