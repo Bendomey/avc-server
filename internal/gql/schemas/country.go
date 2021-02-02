@@ -16,8 +16,14 @@ var CountryType = graphql.NewObject(
 			"image": &graphql.Field{
 				Type: graphql.String,
 			},
+			"description": &graphql.Field{
+				Type: graphql.String,
+			},
 			"currency": &graphql.Field{
 				Type: graphql.String,
+			},
+			"createdBy": &graphql.Field{
+				Type: AdminType,
 			},
 			"createdAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
