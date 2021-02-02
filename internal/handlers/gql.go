@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Bendomey/avc-server/internal/gql/resolvers"
@@ -37,6 +38,7 @@ func CreateGQLServer() *handler.Handler {
 //PlaygroundHanlder registers a route for plaground access
 func PlaygroundHanlder(handler *handler.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		handler.ServeHTTP(w, r)
+		ctx := context.WithValue(r.Context(), utils.GetPrincipalID(), r.Header.Get("Authorization"))
+		handler.ContextHandler(ctx, w, r)
 	}
 }
