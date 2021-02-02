@@ -2,23 +2,29 @@ package schemas
 
 import "github.com/graphql-go/graphql"
 
-//CountryType defines typings for country
-var CountryType = graphql.NewObject(
+// AdminType defines typings for administrators
+var AdminType = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Country",
+		Name: "Administrator",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.ID),
 			},
-			"name": &graphql.Field{
+			"fullname": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
 			},
-			"image": &graphql.Field{
+			"email": &graphql.Field{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+			"phone": &graphql.Field{
 				Type: graphql.String,
 			},
-			"currency": &graphql.Field{
-				Type: graphql.String,
+			"emailVerifiedAt": &graphql.Field{
+				Type: graphql.DateTime,
 			},
+			// "createdBy": &graphql.Field{
+			// 	Type: &graphql.NonNull{s},
+			// },
 			"createdAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
 			},

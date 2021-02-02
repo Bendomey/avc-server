@@ -15,7 +15,8 @@ var pgEnabled bool
 func init() {
 	schema, _ = graphql.NewSchema(
 		graphql.SchemaConfig{
-			Query: resolvers.QueryType,
+			Query:    resolvers.QueryType,
+			Mutation: resolvers.MutationType,
 		},
 	)
 	pgEnabled = utils.MustGetBool("GQL_SERVER_GRAPHQL_PLAYGROUND_ENABLED")
