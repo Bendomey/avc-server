@@ -23,6 +23,15 @@ Builds code into binary for production
 - [x] Bootstrap Server
 - [x] Connect To Database
 
+## Admins
+
+- [ ] Create
+- [ ] Login
+- [ ] Update
+- [ ] Delete
+- [ ] Suspend
+- [ ] Restore
+
 ## Countries
 
 - [ ] Create
