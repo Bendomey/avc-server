@@ -22,6 +22,7 @@ Builds code into binary for production
 
 - [x] Bootstrap Server
 - [x] Connect To Database
+- [x] Lockdown
 
 ## Admins
 
