@@ -23,7 +23,7 @@ var AdminType = graphql.NewObject(
 				Type: graphql.DateTime,
 			},
 			// "createdBy": &graphql.Field{
-			// 	Type: &graphql.NonNull{s},
+			// 	Type: AdminType,
 			// },
 			"createdAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
