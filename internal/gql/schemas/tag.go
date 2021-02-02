@@ -2,29 +2,20 @@ package schemas
 
 import "github.com/graphql-go/graphql"
 
-// AdminType defines typings for administrators
-var AdminType = graphql.NewObject(
+// TagType defines typings for tags - categories
+var TagType = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Administrator",
+		Name: "Tag",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.ID),
 			},
-			"fullname": &graphql.Field{
+			"name": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.String),
 			},
-			"email": &graphql.Field{
-				Type: graphql.NewNonNull(graphql.String),
+			"createdBy": &graphql.Field{
+				Type: AdminType,
 			},
-			"phone": &graphql.Field{
-				Type: graphql.String,
-			},
-			"emailVerifiedAt": &graphql.Field{
-				Type: graphql.DateTime,
-			},
-			// "createdBy": &graphql.Field{
-			// 	Type: AdminType,
-			// },
 			"createdAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
 			},
