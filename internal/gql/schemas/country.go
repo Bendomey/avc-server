@@ -8,10 +8,10 @@ var CountryType = graphql.NewObject(
 		Name: "Country",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
-				Type: graphql.String,
+				Type: graphql.NewNonNull(graphql.ID),
 			},
 			"name": &graphql.Field{
-				Type: graphql.String,
+				Type: graphql.NewNonNull(graphql.String),
 			},
 			"image": &graphql.Field{
 				Type: graphql.String,
@@ -20,10 +20,10 @@ var CountryType = graphql.NewObject(
 				Type: graphql.String,
 			},
 			"createdAt": &graphql.Field{
-				Type: graphql.DateTime,
+				Type: graphql.NewNonNull(graphql.DateTime),
 			},
 			"updatedAt": &graphql.Field{
-				Type: graphql.DateTime,
+				Type: graphql.NewNonNull(graphql.DateTime),
 			},
 		},
 	},
