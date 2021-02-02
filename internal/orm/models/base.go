@@ -21,5 +21,5 @@ type BaseModel struct {
 // detect the entity should soft delete
 type BaseModelSoftDelete struct {
 	BaseModel
-	DeletedAt gorm.DeletedAt
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

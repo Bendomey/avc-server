@@ -13,7 +13,16 @@ import (
 
 func updateMigration(db *gorm.DB) error {
 	err := db.AutoMigrate(
+		&models.Admin{},
 		&models.Country{},
+		&models.User{},
+		&models.Customer{},
+		&models.Lawyer{},
+		&models.Faq{},
+		&models.Tag{},
+		&models.LegalArea{},
+		&models.BlogPost{},
+		&models.NewsletterSubscribers{},
 	)
 	return err
 }
