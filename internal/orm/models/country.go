@@ -1,5 +1,7 @@
 package models
 
+import "github.com/gofrs/uuid"
+
 // Country defines countries we are working with
 type Country struct {
 	BaseModelSoftDelete
@@ -7,6 +9,6 @@ type Country struct {
 	Description *string
 	Currency    *string
 	Image       *string
-	// CreatedByID *string
-	// CreatedBy   *Admin
+	CreatedByID *uuid.UUID
+	CreatedBy   *Admin
 }
