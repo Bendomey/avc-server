@@ -5,7 +5,7 @@ import (
 
 	log "github.com/Bendomey/avc-server/internal/logger"
 
-	// "github.com/Bendomey/avc-server/internal/orm/migration/jobs"
+	"github.com/Bendomey/avc-server/internal/orm/migration/jobs"
 	"github.com/Bendomey/avc-server/internal/orm/models"
 	"github.com/go-gormigrate/gormigrate/v2"
 	"gorm.io/gorm"
@@ -47,9 +47,9 @@ func ServiceAutoMigration(db *gorm.DB, seedDB bool) error {
 	}
 
 	if seedDB {
-		// m = gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
-		// 	jobs.SeedSuperAdmin,
-		// })
+		m = gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+			jobs.SeedSuperAdmin,
+		})
 	}
 
 	return m.Migrate()

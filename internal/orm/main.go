@@ -36,6 +36,7 @@ func Factory() (*ORM, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Info("[ORM] :: Database connection initialized.")
 	orm := &ORM{
 		DB: db,
 	}
@@ -44,6 +45,5 @@ func Factory() (*ORM, error) {
 		return nil, migrateErr
 	}
 
-	log.Info("[ORM] :: Database connection initialized.")
 	return orm, nil
 }

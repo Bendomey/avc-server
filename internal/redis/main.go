@@ -8,12 +8,17 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var host, port, password string
+var host, port, password, goEnv string
 
 func init() {
 	host = utils.MustGet("REDIS_HOST")
 	port = utils.MustGet("REDIS_PORT")
-	password = utils.MustGet("REDIS_PASSWORD")
+	goEnv = utils.MustGet("GO_ENV")
+	if goEnv == "development" {
+		password = ""
+	} else {
+		password = utils.MustGet("REDIS_PASSWORD")
+	}
 }
 
 // Factory connects app to reid
