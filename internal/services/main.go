@@ -7,7 +7,14 @@ import (
 
 // Services responsible for exposing all services to resolvers
 type Services struct {
-	AdminServices AdminService
+	AdminServices   AdminService
+	CountryServices CountryService
+}
+
+//ORM gets orm connection
+type ORM struct {
+	DB  *orm.ORM
+	rdb *redis.Client
 }
 
 //Factory activates all services
@@ -15,8 +22,10 @@ func Factory(orm *orm.ORM, rdb *redis.Client) Services {
 
 	//activate admin service
 	adminService := NewAdminSvc(orm, rdb)
+	countryService := NewCountrySvc(orm, rdb)
 
 	return Services{
-		AdminServices: adminService,
+		AdminServices:   adminService,
+		CountryServices: countryService,
 	}
 }
