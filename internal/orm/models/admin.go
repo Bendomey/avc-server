@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Bendomey/goutilities/pkg/hashpassword"
-	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
 
@@ -15,14 +14,19 @@ type Admin struct {
 	FullName        string  `gorm:"not null;"`
 	Email           string  `gorm:"not null;unique"`
 	Password        string  `gorm:"not null;"`
+	Role            string  `gorm:"not null;"`
 	Phone           *string `gorm:"unique"`
-	EmailVerifiedAt *time.Time
-	CreatedByID     *uuid.UUID
+	PhoneVerifiedAt *time.Time
+	CreatedByID     *string
 	CreatedBy       *Admin
+	SuspendedAt     *time.Time
+	SuspendedReason *string
+	SuspendByID     *string
+	SuspendBy       *Admin
 }
 
-// BeforeSave hook is called before the data is persisted to db
-func (admin *Admin) BeforeSave(tx *gorm.DB) (err error) {
+// BeforeCreate hook is called before the data is persisted to db
+func (admin *Admin) BeforeCreate(tx *gorm.DB) (err error) {
 	//hashes password
 	hashed, err := hashpassword.HashPassword(admin.Password)
 	admin.Password = hashed

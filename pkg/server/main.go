@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Bendomey/avc-server/internal/gql/resolvers"
 	"github.com/Bendomey/avc-server/internal/handlers"
 	log "github.com/Bendomey/avc-server/internal/logger"
+	"github.com/Bendomey/avc-server/internal/services"
 	"github.com/Bendomey/avc-server/pkg/utils"
 )
 
@@ -17,8 +19,9 @@ func init() {
 }
 
 // Run web server
-func Run() {
-	h := handlers.CreateGQLServer()
+func Run(services services.Services) {
+	r := resolvers.ExposeSchema(services)
+	h := handlers.CreateGQLServer(r)
 
 	// // Handlers
 	// Simple keep-alive/ping handler
