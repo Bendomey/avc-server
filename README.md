@@ -26,12 +26,14 @@ Builds code into binary for production
 
 ## Admins
 
-- [ ] Create
-- [ ] Login
-- [ ] Update
-- [ ] Delete
-- [ ] Suspend
-- [ ] Restore
+- [x] Login
+- [x] Create .. I'm left with sending mail
+- [x] Update Password
+- [x] Update Details
+- [x] Update Phone ... I'm left with sending text message and having it verified before update can be done
+- [x] Delete
+- [x] Suspend .. I'm left with sending mail
+- [x] Restore
 
 ## Countries
 
