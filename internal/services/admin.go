@@ -29,12 +29,6 @@ type AdminService interface {
 	RestoreAdmin(ctx context.Context, adminID string) (bool, error)
 }
 
-//ORM gets orm connection
-type ORM struct {
-	DB  *orm.ORM
-	rdb *redis.Client
-}
-
 //LoginResult is the typing for returning login successful data to user
 type LoginResult struct {
 	Token string       `json:"token"`
