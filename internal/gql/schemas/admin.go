@@ -2,6 +2,19 @@ package schemas
 
 import "github.com/graphql-go/graphql"
 
+// EnumTypeAdminRole defines the enum type
+var EnumTypeAdminRole = graphql.NewEnum(graphql.EnumConfig{
+	Name: "AdminRole",
+	Values: graphql.EnumValueConfigMap{
+		"Admin": &graphql.EnumValueConfig{
+			Value: "Admin",
+		},
+		"User": &graphql.EnumValueConfig{
+			Value: "User",
+		},
+	},
+})
+
 // AdminType defines typings for administrators
 var AdminType = graphql.NewObject(
 	graphql.ObjectConfig{
@@ -19,7 +32,10 @@ var AdminType = graphql.NewObject(
 			"phone": &graphql.Field{
 				Type: graphql.String,
 			},
-			"emailVerifiedAt": &graphql.Field{
+			"role": &graphql.Field{
+				Type: graphql.NewNonNull(EnumTypeAdminRole),
+			},
+			"phoneVerifiedAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
 			// "createdBy": &graphql.Field{
@@ -30,6 +46,21 @@ var AdminType = graphql.NewObject(
 			},
 			"updatedAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
+			},
+		},
+	},
+)
+
+//LoginAdminType defines the response on successfull login
+var LoginAdminType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "AdminLoginResult",
+		Fields: graphql.Fields{
+			"token": &graphql.Field{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+			"admin": &graphql.Field{
+				Type: graphql.NewNonNull(AdminType),
 			},
 		},
 	},

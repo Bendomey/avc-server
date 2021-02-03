@@ -2,14 +2,12 @@ package models
 
 import (
 	"time"
-
-	"github.com/gofrs/uuid"
 )
 
 // Lawyer defines the registred laywers in the system
 type Lawyer struct {
 	BaseModelSoftDelete
-	UserID uuid.UUID `gorm:"not null;"`
+	UserID string `gorm:"not null;"`
 	User   User
 
 	// For address
@@ -33,10 +31,10 @@ type Lawyer struct {
 	CoverLetter       *string
 
 	SuspendAt   *time.Time
-	SuspendByID *uuid.UUID
+	SuspendByID *string
 	SuspendBy   *Admin
 
 	ApprovedAt   *time.Time
-	ApprovedByID *uuid.UUID
+	ApprovedByID *string
 	ApprovedBy   *Admin
 }

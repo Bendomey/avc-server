@@ -2,14 +2,12 @@ package models
 
 import (
 	"time"
-
-	"github.com/gofrs/uuid"
 )
 
 // Customer defines customers in the system. They could be businesses or individuals
 type Customer struct {
 	BaseModelSoftDelete
-	UserID uuid.UUID `gorm:"not null;"`
+	UserID string `gorm:"not null;"`
 	User   User
 	Type   string `gorm:"not null;"` // business, individual
 	TIN    *string
@@ -30,6 +28,6 @@ type Customer struct {
 	CompanyRegistrationNumber    *string
 
 	SuspendAt   *time.Time
-	SuspendByID *uuid.UUID
+	SuspendByID *string
 	SuspendBy   *Admin
 }

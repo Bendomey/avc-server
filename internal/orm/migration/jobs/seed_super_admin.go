@@ -1,6 +1,8 @@
 package jobs
 
 import (
+	"time"
+
 	"github.com/Bendomey/avc-server/internal/orm/models"
 	"github.com/Bendomey/avc-server/pkg/utils"
 	"github.com/go-gormigrate/gormigrate/v2"
@@ -8,15 +10,19 @@ import (
 )
 
 var (
-	fullname   = utils.MustGet("ADMIN_NAME")
-	email      = utils.MustGet("ADMIN_EMAIL")
-	password   = utils.MustGet("ADMIN_PASSWORD")
-	phone      = utils.MustGet("ADMIN_PHONE")
-	superAdmin = &models.Admin{
-		FullName: fullname,
-		Email:    email,
-		Password: password,
-		Phone:    &phone,
+	fullname        = utils.MustGet("ADMIN_NAME")
+	email           = utils.MustGet("ADMIN_EMAIL")
+	password        = utils.MustGet("ADMIN_PASSWORD")
+	phone           = utils.MustGet("ADMIN_PHONE")
+	role            = utils.MustGet("ADMIN_ROLE")
+	phoneVerifiedAt = time.Now()
+	superAdmin      = &models.Admin{
+		FullName:        fullname,
+		Email:           email,
+		Password:        password,
+		Phone:           &phone,
+		PhoneVerifiedAt: &phoneVerifiedAt,
+		Role:            role,
 	}
 )
 

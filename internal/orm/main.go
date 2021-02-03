@@ -34,16 +34,15 @@ func init() {
 func Factory() (*ORM, error) {
 	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", host, user, password, dbname, port, sslmode)), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		log.Panic("[ORM] err: ", err)
 	}
 	log.Info("[ORM] :: Database connection initialized.")
 	orm := &ORM{
 		DB: db,
 	}
 	if autoMigrate {
-		migrateErr := migration.ServiceAutoMigration(orm.DB, seedDB)
-		return nil, migrateErr
+		err = migration.ServiceAutoMigration(orm.DB, seedDB)
 	}
 
-	return orm, nil
+	return orm, err
 }
