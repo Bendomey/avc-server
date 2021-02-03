@@ -16,12 +16,12 @@ type ResolverLoader struct {
 func ExposeSchema(services services.Services) []*graphql.Object {
 
 	var queriesGathering = []map[string]*graphql.Field{
-		country.Query,
+		ExposeCountryResolver(services).Query,
 		ExposeAdminResolver(services).Query,
 	}
 
 	var mutationsGathering = []map[string]*graphql.Field{
-		country.Mutation,
+		ExposeCountryResolver(services).Mutation,
 		ExposeAdminResolver(services).Mutation,
 	}
 
