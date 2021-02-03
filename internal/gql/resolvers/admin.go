@@ -19,6 +19,13 @@ var adminQuery = func(svcs services.Services) map[string]*graphql.Field {
 				return nil, nil
 			},
 		},
+		"admin": {
+			Type:        graphql.NewNonNull(graphql.NewList(schemas.AdminType)),
+			Description: "Get an Administrator with id",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return nil, nil
+			},
+		},
 	}
 }
 
@@ -159,13 +166,13 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 			Type:        graphql.NewNonNull(graphql.Boolean),
 			Description: "Delete Admin",
 			Args: graphql.FieldConfigArgument{
-				"adminID": &graphql.ArgumentConfig{
-					Type: graphql.NewNonNull(graphql.String),
+				"adminId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
 				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
-					adminID := p.Args["adminID"].(string)
+					adminID := p.Args["adminId"].(string)
 					if adminData.Role != "Admin" {
 						return nil, errors.New("PermissionDenied")
 					}
@@ -181,8 +188,8 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 			Type:        graphql.NewNonNull(graphql.Boolean),
 			Description: "Suspend Admin",
 			Args: graphql.FieldConfigArgument{
-				"adminID": &graphql.ArgumentConfig{
-					Type: graphql.NewNonNull(graphql.String),
+				"adminId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
 				},
 				"reason": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.String),
@@ -190,7 +197,7 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
-					adminID := p.Args["adminID"].(string)
+					adminID := p.Args["adminId"].(string)
 					reason := p.Args["reason"].(string)
 					if adminData.Role != "Admin" {
 						return nil, errors.New("PermissionDenied")
@@ -207,13 +214,13 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 			Type:        graphql.NewNonNull(graphql.Boolean),
 			Description: "Restore Admin",
 			Args: graphql.FieldConfigArgument{
-				"adminID": &graphql.ArgumentConfig{
-					Type: graphql.NewNonNull(graphql.String),
+				"adminId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
 				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
-					adminID := p.Args["adminID"].(string)
+					adminID := p.Args["adminId"].(string)
 					if adminData.Role != "Admin" {
 						return nil, errors.New("PermissionDenied")
 					}
