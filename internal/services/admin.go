@@ -29,12 +29,6 @@ type AdminService interface {
 	RestoreAdmin(ctx context.Context, adminID string) (bool, error)
 }
 
-//ORM gets orm connection
-type ORM struct {
-	DB  *orm.ORM
-	rdb *redis.Client
-}
-
 //LoginResult is the typing for returning login successful data to user
 type LoginResult struct {
 	Token string       `json:"token"`
@@ -51,9 +45,12 @@ func (orm *ORM) LoginAdmin(ctx context.Context, email string, password string) (
 	var _Admin models.Admin
 
 	//check if email is in db
-	_Result := orm.DB.DB.Joins("CreatedBy").First(&_Admin, "admins.email = ?", email)
-	if errors.Is(_Result.Error, gorm.ErrRecordNotFound) {
-		return nil, errors.New("AdminNotFound")
+	err := orm.DB.DB.Joins("CreatedBy").First(&_Admin, "admins.email = ?", email).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("AdminNotFound")
+		}
+		return nil, err
 	}
 
 	//check if the person is suspended or not
@@ -113,10 +110,12 @@ func (orm *ORM) UpdateAdminPassword(ctx context.Context, adminID string, oldPass
 	var _Admin models.Admin
 
 	err := orm.DB.DB.First(&_Admin, "id = ?", adminID).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, errors.New("AdminNotFound")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("AdminNotFound")
+		}
+		return false, err
 	}
-
 	isSame := validatehash.ValidateCipher(oldPassword, _Admin.Password)
 	if isSame == false {
 		return false, errors.New("OldPasswordIncorrect")
@@ -139,8 +138,11 @@ func (orm *ORM) UpdateAdmin(ctx context.Context, adminID string, fullname *strin
 	var _Admin models.Admin
 
 	err := orm.DB.DB.First(&_Admin, "id = ?", adminID).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, errors.New("AdminNotFound")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("AdminNotFound")
+		}
+		return false, err
 	}
 
 	if fullname != nil {
@@ -160,8 +162,11 @@ func (orm *ORM) UpdateAdminPhone(ctx context.Context, adminID string, phone stri
 	var _Admin models.Admin
 
 	err := orm.DB.DB.First(&_Admin, "id = ?", adminID).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, errors.New("AdminNotFound")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("AdminNotFound")
+		}
+		return false, err
 	}
 	updateError := orm.DB.DB.Model(&_Admin).Updates(map[string]interface{}{"phone": phone, "phone_verified_at": time.Now()}).Error
 	if updateError != nil {
@@ -175,8 +180,11 @@ func (orm *ORM) DeleteAdmin(ctx context.Context, adminID string) (bool, error) {
 	var _Admin models.Admin
 	//find
 	err := orm.DB.DB.First(&_Admin, "id = ?", adminID).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, errors.New("AdminNotFound")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("AdminNotFound")
+		}
+		return false, err
 	}
 
 	//delete
@@ -194,8 +202,11 @@ func (orm *ORM) SuspendAdmin(ctx context.Context, user string, admin string, rea
 
 	//find
 	err := orm.DB.DB.First(&_Admin, "id = ?", user).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, errors.New("AdminNotFound")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("AdminNotFound")
+		}
+		return false, err
 	}
 
 	//update suspendedAt
@@ -218,8 +229,11 @@ func (orm *ORM) RestoreAdmin(ctx context.Context, adminID string) (bool, error) 
 
 	//find
 	err := orm.DB.DB.First(&_Admin, "id = ?", adminID).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, errors.New("AdminNotFound")
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("AdminNotFound")
+		}
+		return false, err
 	}
 
 	//update suspendedAt

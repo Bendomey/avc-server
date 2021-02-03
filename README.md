@@ -23,6 +23,7 @@ Builds code into binary for production
 - [x] Bootstrap Server
 - [x] Connect To Database
 - [x] Lockdown
+- [x] Generate Filter For Any Input Given (Limit, Skip, Date Range, Search With SearchFields)
 
 ## Admins
 
@@ -37,11 +38,11 @@ Builds code into binary for production
 
 ## Countries
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read one
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Delete
+- [x] Read one
+- [x] Read All
 
 ## Users
 
