@@ -51,18 +51,14 @@ Builds code into binary for production
 ## Users
 
 - [ ] Create User
-- [ ] Create Permission (If Admin)
 - [ ] Create Customer (if Customer)
 - [ ] Create Lawyer (if laywer)
 - [ ] Add user to newsletter subscriber (If already part, update type to user and not anon)
 - [ ] Update
 - [ ] Read All
 - [ ] Read one
+- [ ] Count
 - [ ] Delete
-
-## Permissions
-
-- [ ] Update Permission
 
 ## NewsLetter Subscribers
 
