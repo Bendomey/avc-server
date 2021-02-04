@@ -401,6 +401,26 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			),
 		},
+		"deleteUser": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Deletes user",
+			Args: graphql.FieldConfigArgument{
+				"userId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					userID := p.Args["userId"].(string)
+
+					_Response, err := svcs.UserServices.DeleteUser(p.Context, userID)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
 	}
 }
 
