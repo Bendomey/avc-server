@@ -6,10 +6,10 @@ var enumTypeCustomerType = graphql.NewEnum(graphql.EnumConfig{
 	Name: "CustomerType",
 	Values: graphql.EnumValueConfigMap{
 		"Business": &graphql.EnumValueConfig{
-			Value: 0,
+			Value: "Business",
 		},
 		"Individual": &graphql.EnumValueConfig{
-			Value: 1,
+			Value: "Individual",
 		},
 	},
 })
