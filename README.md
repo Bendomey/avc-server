@@ -50,11 +50,13 @@ Builds code into binary for production
 
 ## Users
 
-- [ ] Create User
-- [ ] Create Customer (if Customer)
-- [ ] Create Lawyer (if laywer)
-- [ ] Add user to newsletter subscriber (If already part, update type to user and not anon)
-- [ ] Update
+- [x] Create User
+- [x] Create Customer (if Customer)
+- [x] Create Lawyer (if laywer)
+- [x] Add user to newsletter subscriber (If already part, update type to user and not anon)
+- [x] Resend Code To Verofy Email
+- [x] Verify Email
+- [ ] Update User And (Customer Or Lawyer)
 - [ ] Read All
 - [ ] Read one
 - [ ] Count
