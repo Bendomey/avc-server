@@ -2,14 +2,15 @@ package schemas
 
 import "github.com/graphql-go/graphql"
 
-var enumTypeTestUserType = graphql.NewEnum(graphql.EnumConfig{
+//EnumTypeUserType defines enum for useer type
+var EnumTypeUserType = graphql.NewEnum(graphql.EnumConfig{
 	Name: "UserType",
 	Values: graphql.EnumValueConfigMap{
 		"Customer": &graphql.EnumValueConfig{
-			Value: 0,
+			Value: "Customer",
 		},
 		"Lawyer": &graphql.EnumValueConfig{
-			Value: 1,
+			Value: "Laywer",
 		},
 	},
 })
@@ -23,7 +24,7 @@ var UserType = graphql.NewObject(
 				Type: graphql.NewNonNull(graphql.ID),
 			},
 			"type": &graphql.Field{
-				Type: graphql.NewNonNull(enumTypeTestUserType),
+				Type: graphql.NewNonNull(EnumTypeUserType),
 			},
 			"lastName": &graphql.Field{
 				Type: graphql.String,
@@ -51,6 +52,21 @@ var UserType = graphql.NewObject(
 			},
 			"updatedAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
+			},
+		},
+	},
+)
+
+//LoginUserType defines the response on successfull login
+var LoginUserType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "UserLoginResult",
+		Fields: graphql.Fields{
+			"token": &graphql.Field{
+				Type: graphql.NewNonNull(graphql.String),
+			},
+			"user": &graphql.Field{
+				Type: graphql.NewNonNull(UserType),
 			},
 		},
 	},
