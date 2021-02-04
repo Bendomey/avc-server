@@ -153,9 +153,9 @@ func (orm *ORM) ReadCountries(ctx context.Context, filterQuery *utils.FilterQuer
 
 //ReadCountriesLength retirieved the count based on a query
 func (orm *ORM) ReadCountriesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, description *string) (*int64, error) {
-	var _CountriesLength *int64
+	var _CountriesLength int64
 
-	_Results := orm.DB.DB
+	_Results := orm.DB.DB.Model(&models.Country{})
 	//add date range if added
 	if filterQuery.DateRange != nil {
 		_Results = _Results.Where("countries.created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
@@ -183,10 +183,10 @@ func (orm *ORM) ReadCountriesLength(ctx context.Context, filterQuery *utils.Filt
 
 	//continue the filtration
 	_Results = _Results.Joins("CreatedBy").
-		Count(_CountriesLength)
+		Count(&_CountriesLength)
 
 	if _Results.Error != nil {
 		return nil, _Results.Error
 	}
-	return _CountriesLength, nil
+	return &_CountriesLength, nil
 }
