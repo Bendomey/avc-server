@@ -49,14 +49,14 @@ var adminQuery = func(svcs services.Services) map[string]*graphql.Field {
 				var newResponse []interface{}
 				//loop to get the types
 				for _, dbRec := range _Response {
-					rec := transformations.DBAdminToGQLAdmin(dbRec)
+					rec := transformations.DBAdminToGQLAdmin(&dbRec)
 					newResponse = append(newResponse, rec)
 				}
 				return newResponse, nil
 			},
 		},
 		"adminsLength": {
-			Type:        graphql.NewNonNull(graphql.NewList(schemas.AdminType)),
+			Type:        graphql.NewNonNull(graphql.Int),
 			Description: "Get Length of Administrators in the system",
 			Args: graphql.FieldConfigArgument{
 				"filter": &graphql.ArgumentConfig{
