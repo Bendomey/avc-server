@@ -20,6 +20,10 @@ type User struct {
 	Phone           *string `gorm:"unique"`
 	EmailVerifiedAt *time.Time
 	PhoneVerifiedAt *time.Time
+
+	SuspendedAt   *time.Time
+	SuspendedByID *string
+	SuspendedBy   *Admin
 }
 
 // BeforeCreate hook is called before the data is persisted to db

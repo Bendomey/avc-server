@@ -26,8 +26,4 @@ type Customer struct {
 	CompanyCountryOfRegistration *string
 	CompanyDateOfRegistration    *time.Time
 	CompanyRegistrationNumber    *string
-
-	SuspendAt   *time.Time
-	SuspendByID *string
-	SuspendBy   *Admin
 }
