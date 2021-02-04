@@ -58,6 +58,44 @@ var countriesQuery = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			),
 		},
+		"countriesLength": {
+			Type:        graphql.NewNonNull(graphql.Int),
+			Description: "Get country Counts",
+			Args: graphql.FieldConfigArgument{
+				"filter": &graphql.ArgumentConfig{
+					Type: schemas.FilterCountryType,
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
+					}
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var name, description *string
+
+					if filterOk {
+						takeName, nameOk := takeFilter["name"].(string)
+						takeDescription, descriptionOk := takeFilter["description"].(string)
+						if nameOk {
+							name = &takeName
+						}
+						if descriptionOk {
+							description = &takeDescription
+						}
+					}
+
+					_Response, err := svcs.CountryServices.ReadCountriesLength(p.Context, filterQuery, name, description)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
 		"country": {
 			Type:        schemas.CountryType,
 			Description: "Get single country",

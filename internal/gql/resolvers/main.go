@@ -18,11 +18,13 @@ func ExposeSchema(services services.Services) []*graphql.Object {
 	var queriesGathering = []map[string]*graphql.Field{
 		ExposeCountryResolver(services).Query,
 		ExposeAdminResolver(services).Query,
+		ExposeUserResolver(services).Query,
 	}
 
 	var mutationsGathering = []map[string]*graphql.Field{
 		ExposeCountryResolver(services).Mutation,
 		ExposeAdminResolver(services).Mutation,
+		ExposeUserResolver(services).Mutation,
 	}
 
 	// QueryType is the main querytype implementation

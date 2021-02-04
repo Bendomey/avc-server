@@ -9,6 +9,7 @@ import (
 type Services struct {
 	AdminServices   AdminService
 	CountryServices CountryService
+	UserServices    UserService
 }
 
 //ORM gets orm connection
@@ -23,9 +24,11 @@ func Factory(orm *orm.ORM, rdb *redis.Client) Services {
 	//activate admin service
 	adminService := NewAdminSvc(orm, rdb)
 	countryService := NewCountrySvc(orm, rdb)
+	userService := NewUserSvc(orm, rdb)
 
 	return Services{
 		AdminServices:   adminService,
 		CountryServices: countryService,
+		UserServices:    userService,
 	}
 }

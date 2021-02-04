@@ -38,7 +38,7 @@ var CountryType = graphql.NewObject(
 //FilterCountryType  for filtering countries type
 var FilterCountryType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
-		Name: "Filter",
+		Name: "GetCountriesFilter",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"name": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,

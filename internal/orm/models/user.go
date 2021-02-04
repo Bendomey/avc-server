@@ -22,8 +22,8 @@ type User struct {
 	PhoneVerifiedAt *time.Time
 }
 
-// BeforeSave hook is called before the data is persisted to db
-func (user *User) BeforeSave(tx *gorm.DB) (err error) {
+// BeforeCreate hook is called before the data is persisted to db
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
 	//hashes password
 	hashed, err := hashpassword.HashPassword(user.Password)
 	user.Password = hashed

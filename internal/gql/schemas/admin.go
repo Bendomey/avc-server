@@ -65,3 +65,27 @@ var LoginAdminType = graphql.NewObject(
 		},
 	},
 )
+
+//FilterAdminType  for filtering admins type
+var FilterAdminType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "GetAdminsFilter",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"fullname": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"search": &graphql.InputObjectFieldConfig{
+				Type: SearchType,
+			},
+			"order": &graphql.InputObjectFieldConfig{
+				Type: enumTypeForOrder,
+			},
+			"orderBy": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"dateRange": &graphql.InputObjectFieldConfig{
+				Type: DateRangeType,
+			},
+		},
+	},
+)

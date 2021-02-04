@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -20,17 +21,20 @@ import (
 // AdminService inteface holds the admin-databse transactions of this controller
 type AdminService interface {
 	CreateAdmin(ctx context.Context, name string, email string, role string, reatedBy *string) (*models.Admin, error)
-	LoginAdmin(ctx context.Context, email string, password string) (*LoginResult, error)
+	LoginAdmin(ctx context.Context, email string, password string) (*LoginResultAdmin, error)
 	UpdateAdminPassword(ctx context.Context, adminID string, oldPassword string, newPassword string) (bool, error)
 	UpdateAdmin(ctx context.Context, adminID string, fullname *string, email *string) (bool, error)
 	UpdateAdminPhone(ctx context.Context, adminID string, phone string) (bool, error)
 	DeleteAdmin(ctx context.Context, adminID string) (bool, error)
 	SuspendAdmin(ctx context.Context, user string, admin string, reason string) (bool, error)
 	RestoreAdmin(ctx context.Context, adminID string) (bool, error)
+	ReadAdmins(ctx context.Context, filterQuery *utils.FilterQuery, name *string) ([]models.Admin, error)
+	ReadAdminsLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string) (*int64, error)
+	ReadAdmin(ctx context.Context, adminID string) (*models.Admin, error)
 }
 
-//LoginResult is the typing for returning login successful data to user
-type LoginResult struct {
+//LoginResultAdmin is the typing for returning login successful data to user
+type LoginResultAdmin struct {
 	Token string       `json:"token"`
 	Admin models.Admin `json:"admin"`
 }
@@ -41,7 +45,7 @@ func NewAdminSvc(db *orm.ORM, rdb *redis.Client) AdminService {
 }
 
 // LoginAdmin checks if the email is having valid credentials and returns them a unique, secured token to help them get resources from app
-func (orm *ORM) LoginAdmin(ctx context.Context, email string, password string) (*LoginResult, error) {
+func (orm *ORM) LoginAdmin(ctx context.Context, email string, password string) (*LoginResultAdmin, error) {
 	var _Admin models.Admin
 
 	//check if email is in db
@@ -74,7 +78,7 @@ func (orm *ORM) LoginAdmin(ctx context.Context, email string, password string) (
 		return nil, signTokenErrr
 	}
 	log.Println(_Admin.Password)
-	return &LoginResult{
+	return &LoginResultAdmin{
 		Token: token,
 		Admin: _Admin,
 	}, nil
@@ -246,4 +250,91 @@ func (orm *ORM) RestoreAdmin(ctx context.Context, adminID string) (bool, error) 
 		return false, updateError
 	}
 	return true, nil
+}
+
+//ReadAdmins queries admins based on a query
+func (orm *ORM) ReadAdmins(ctx context.Context, filterQuery *utils.FilterQuery, name *string) ([]models.Admin, error) {
+	var _Admins []models.Admin
+
+	_Results := orm.DB.DB
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("admins.created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if name != nil {
+		_Results = _Results.Where("admins.Name = ?", name)
+	}
+
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("admins.%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("admins.%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("CreatedBy").
+		Order(fmt.Sprintf("%s %s", filterQuery.OrderBy, filterQuery.Order)).
+		Limit(filterQuery.Limit).Offset(filterQuery.Skip).
+		Find(&_Admins)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return _Admins, nil
+}
+
+//ReadAdminsLength retirieved the count based on a query
+func (orm *ORM) ReadAdminsLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string) (*int64, error) {
+	var _CountriesLength int64
+
+	_Results := orm.DB.DB.Model(&models.Admin{})
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("admins.created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if name != nil {
+		_Results = _Results.Where("admins.full_name = ?", name)
+	}
+
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("admins.%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("admins.%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("CreatedBy").
+		Count(&_CountriesLength)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return &_CountriesLength, nil
+}
+
+//ReadAdmin calls the single in admin
+func (orm *ORM) ReadAdmin(ctx context.Context, adminID string) (*models.Admin, error) {
+	var _Admin models.Admin
+
+	err := orm.DB.DB.Joins("CreatedBy").First(&_Admin, "admins.id = ?", adminID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("AdminNotFound")
+	}
+
+	// return success
+	return &_Admin, nil
 }

@@ -6,7 +6,7 @@ import (
 )
 
 // DBUserToGQLUser transforms [user] db input to gql type
-func DBUserToGQLUser(i *models.Admin) interface{} {
+func DBAdminToGQLAdmin(i *models.Admin) interface{} {
 	return map[string]interface{}{
 		"id":              i.ID.String(),
 		"fullname":        i.FullName,

@@ -19,6 +19,7 @@ type CountryService interface {
 	DeleteCountry(ctx context.Context, countryID string) (bool, error)
 	ReadCountry(ctx context.Context, countryID string) (*models.Country, error)
 	ReadCountries(ctx context.Context, filterQuery *utils.FilterQuery, name *string, description *string) ([]*models.Country, error)
+	ReadCountriesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, description *string) (*int64, error)
 }
 
 // NewCountrySvc exposed the ORM to the country functions in the module
@@ -148,4 +149,44 @@ func (orm *ORM) ReadCountries(ctx context.Context, filterQuery *utils.FilterQuer
 		return nil, _Results.Error
 	}
 	return _Countries, nil
+}
+
+//ReadCountriesLength retirieved the count based on a query
+func (orm *ORM) ReadCountriesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, description *string) (*int64, error) {
+	var _CountriesLength int64
+
+	_Results := orm.DB.DB.Model(&models.Country{})
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("countries.created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if name != nil {
+		_Results = _Results.Where("countries.Name = ?", name)
+	}
+
+	if description != nil {
+		_Results = _Results.Where("countries.Description = ?", description)
+	}
+
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("countries.%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("countries.%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("CreatedBy").
+		Count(&_CountriesLength)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return &_CountriesLength, nil
 }
