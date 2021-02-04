@@ -13,7 +13,7 @@ func DBCountryToGQLUser(i *models.Country) interface{} {
 		"description": i.Description,
 		"currency":    i.Currency,
 		"image":       i.Image,
-		"createdBy":   DBUserToGQLUser(&i.CreatedBy),
+		"createdBy":   DBAdminToGQLAdmin(&i.CreatedBy),
 		"createdAt":   i.CreatedAt,
 		"updatedAt":   i.UpdatedAt,
 	}
