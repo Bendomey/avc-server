@@ -421,6 +421,50 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			),
 		},
+		"suspendUser": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Suspend User",
+			Args: graphql.FieldConfigArgument{
+				"userId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+				"reason": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					userID := p.Args["userId"].(string)
+					reason := p.Args["reason"].(string)
+
+					_Response, err := svcs.UserServices.SuspendUser(p.Context, userID, adminData.ID, reason)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
+		"restoreUser": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Restore User",
+			Args: graphql.FieldConfigArgument{
+				"userId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					userID := p.Args["userId"].(string)
+
+					_Response, err := svcs.UserServices.RestoreUser(p.Context, userID)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
 	}
 }
 
