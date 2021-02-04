@@ -58,8 +58,8 @@ Builds code into binary for production
 - [x] Verify Email
 - [x] Update User And (Customer Or Lawyer)
 - [x] Delete
-- [ ] Suspend
-- [ ] Restore
+- [x] Suspend
+- [x] Restore
 - [ ] Read All
 - [ ] Read one
 - [ ] Count
