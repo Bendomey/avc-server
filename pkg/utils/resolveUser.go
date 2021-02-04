@@ -12,7 +12,8 @@ import (
 
 //UserFromToken unmarshals cliams from jwt to get admin id
 type UserFromToken struct {
-	ID string `json:"id"`
+	ID   string `json:"id"`
+	Type string `json:"type"`
 }
 
 func extractUserToken(unattendedToken string) (string, error) {
@@ -41,6 +42,7 @@ func validateUser(unattendedToken string) (*UserFromToken, error) {
 	var userFromTokenImplementation UserFromToken
 	if ok && rawToken.Valid {
 		userFromTokenImplementation.ID = claims["id"].(string)
+		userFromTokenImplementation.Type = claims["type"].(string)
 	}
 
 	//check if its exists in db
