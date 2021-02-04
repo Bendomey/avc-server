@@ -24,6 +24,7 @@ type UserService interface {
 	LoginUser(ctx context.Context, email string, password string) (*LoginResultUser, error)
 	ResendUserCode(ctx context.Context, userID string) (*models.User, error)
 	VerifyUserEmail(ctx context.Context, userID string, code string) (*LoginResultUser, error)
+	DeleteUser(ctx context.Context, userID string) (bool, error)
 	UpdateUserAndCustomer(
 		ctx context.Context,
 		userID string,
@@ -534,4 +535,30 @@ func (orm *ORM) UpdateUserAndLawyer(
 		Lawyer:   &_Lawyer,
 		Customer: nil,
 	}, nil
+}
+
+//DeleteUser deletes a user
+func (orm *ORM) DeleteUser(ctx context.Context, userID string) (bool, error) {
+	var _User models.User
+
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("UserNotFound")
+	}
+	if _User.Type == "Customer" {
+		var _Customer models.Customer
+		_ = orm.DB.DB.Where("user_id = ?", userID).Delete(&_Customer).Error
+	} else {
+		var _Lawyer models.Lawyer
+		_ = orm.DB.DB.Where("user_id = ?", userID).Delete(&_Lawyer).Error
+	}
+
+	//delete
+	delErr := orm.DB.DB.Delete(&_User).Error
+	if delErr != nil {
+		return false, delErr
+	}
+
+	// return success
+	return true, nil
 }
