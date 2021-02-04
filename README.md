@@ -57,10 +57,12 @@ Builds code into binary for production
 - [x] Resend Code To Verofy Email
 - [x] Verify Email
 - [x] Update User And (Customer Or Lawyer)
+- [x] Delete
+- [ ] Suspend
+- [ ] Restore
 - [ ] Read All
 - [ ] Read one
 - [ ] Count
-- [ ] Delete
 
 ## NewsLetter Subscribers
 
