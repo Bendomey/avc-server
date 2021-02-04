@@ -73,7 +73,6 @@ var countriesQuery = func(svcs services.Services) map[string]*graphql.Field {
 					if filterErr != nil {
 						return nil, filterErr
 					}
-
 					//fields
 					takeFilter, filterOk := argument["filter"].(map[string]interface{})
 					var name, description *string
