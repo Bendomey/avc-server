@@ -35,6 +35,9 @@ Builds code into binary for production
 - [x] Delete
 - [x] Suspend .. I'm left with sending mail
 - [x] Restore
+- [x] Read one
+- [x] Read all
+- [x] Count
 
 ## Countries
 
@@ -43,6 +46,7 @@ Builds code into binary for production
 - [x] Delete
 - [x] Read one
 - [x] Read All
+- [x] Count
 
 ## Users
 
