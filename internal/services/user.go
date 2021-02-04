@@ -25,6 +25,8 @@ type UserService interface {
 	ResendUserCode(ctx context.Context, userID string) (*models.User, error)
 	VerifyUserEmail(ctx context.Context, userID string, code string) (*LoginResultUser, error)
 	DeleteUser(ctx context.Context, userID string) (bool, error)
+	SuspendUser(ctx context.Context, userID string, adminID string, reason string) (bool, error)
+	RestoreUser(ctx context.Context, userID string) (bool, error)
 	UpdateUserAndCustomer(
 		ctx context.Context,
 		userID string,
@@ -560,5 +562,57 @@ func (orm *ORM) DeleteUser(ctx context.Context, userID string) (bool, error) {
 	}
 
 	// return success
+	return true, nil
+}
+
+//SuspendUser suspends the user in question
+func (orm *ORM) SuspendUser(ctx context.Context, userID string, adminID string, reason string) (bool, error) {
+	var _User models.User
+
+	//find
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("UserNotFound")
+		}
+		return false, err
+	}
+
+	//update suspendedAt
+	updateError := orm.DB.DB.Model(&_User).Updates(map[string]interface{}{
+		"SuspendedAt":     time.Now(),
+		"SuspendedReason": reason,
+		"SuspendedByID":   adminID,
+	}).Error
+	if updateError != nil {
+		return false, updateError
+	}
+
+	//send mail plus reason
+	return true, nil
+}
+
+//RestoreUser restores the user in question
+func (orm *ORM) RestoreUser(ctx context.Context, userID string) (bool, error) {
+	var _User models.User
+
+	//find
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("UserNotFound")
+		}
+		return false, err
+	}
+
+	//update suspendedAt
+	updateError := orm.DB.DB.Model(&_User).Updates(map[string]interface{}{
+		"SuspendedAt":     nil,
+		"SuspendedReason": nil,
+		"SuspendedByID":   nil,
+	}).Error
+	if updateError != nil {
+		return false, updateError
+	}
 	return true, nil
 }
