@@ -30,10 +30,6 @@ type Lawyer struct {
 	CV                *string
 	CoverLetter       *string
 
-	SuspendAt   *time.Time
-	SuspendByID *string
-	SuspendBy   *Admin
-
 	ApprovedAt   *time.Time
 	ApprovedByID *string
 	ApprovedBy   *Admin

@@ -33,7 +33,7 @@ func validateUser(unattendedToken string) (*UserFromToken, error) {
 	}
 
 	//extract token metadata
-	rawToken, validateError := validatetoken.ValidateJWTToken(token, os.Getenv("ADMIN_SECRET"))
+	rawToken, validateError := validatetoken.ValidateJWTToken(token, os.Getenv("USER_SECRET"))
 	if validateError != nil {
 		return nil, errors.New("AuthorizationFailed")
 	}

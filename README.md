@@ -56,11 +56,13 @@ Builds code into binary for production
 - [x] Add user to newsletter subscriber (If already part, update type to user and not anon)
 - [x] Resend Code To Verofy Email
 - [x] Verify Email
-- [ ] Update User And (Customer Or Lawyer)
+- [x] Update User And (Customer Or Lawyer)
+- [x] Delete
+- [x] Suspend
+- [x] Restore
 - [ ] Read All
 - [ ] Read one
 - [ ] Count
-- [ ] Delete
 
 ## NewsLetter Subscribers
 

@@ -77,7 +77,6 @@ func (orm *ORM) LoginAdmin(ctx context.Context, email string, password string) (
 	if signTokenErrr != nil {
 		return nil, signTokenErrr
 	}
-	log.Println(_Admin.Password)
 	return &LoginResultAdmin{
 		Token: token,
 		Admin: _Admin,

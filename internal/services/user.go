@@ -12,6 +12,7 @@ import (
 	"github.com/Bendomey/avc-server/pkg/utils"
 	"github.com/Bendomey/goutilities/pkg/generatecode"
 	"github.com/Bendomey/goutilities/pkg/signjwt"
+	"github.com/Bendomey/goutilities/pkg/validatehash"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
@@ -20,14 +21,65 @@ import (
 // UserService inteface holds the user-databse transactions of this controller
 type UserService interface {
 	CreateUser(ctx context.Context, userType string, email string, password string) (*models.User, error)
+	LoginUser(ctx context.Context, email string, password string) (*LoginResultUser, error)
 	ResendUserCode(ctx context.Context, userID string) (*models.User, error)
 	VerifyUserEmail(ctx context.Context, userID string, code string) (*LoginResultUser, error)
+	DeleteUser(ctx context.Context, userID string) (bool, error)
+	SuspendUser(ctx context.Context, userID string, adminID string, reason string) (bool, error)
+	RestoreUser(ctx context.Context, userID string) (bool, error)
+	UpdateUserAndCustomer(
+		ctx context.Context,
+		userID string,
+		lastName *string,
+		firstName *string,
+		otherNames *string,
+		phone *string,
+		email *string,
+		customerType *string,
+		tin *string,
+		digitalAddress *string,
+		addressCountry *string,
+		addressCity *string,
+		addressStreetName *string,
+		addressNumber *string,
+		companyName *string,
+		companyEntityType *string,
+		companyEntityTypeOther *string,
+		companyCountryOfRegistration *string,
+		companyDateOfRegistration *time.Time,
+		companyRegistrationNumber *string,
+	) (*LoginResultUser, error)
+	UpdateUserAndLawyer(
+		ctx context.Context,
+		userID string,
+		lastName *string,
+		firstName *string,
+		otherNames *string,
+		phone *string,
+		email *string,
+		tin *string,
+		digitalAddress *string,
+		addressCountry *string,
+		addressCity *string,
+		addressStreetName *string,
+		addressNumber *string,
+		firstYearOfBarAdmission *string,
+		licenseNumber *string,
+		nationalIDFront *string,
+		nationalIDBack *string,
+		bARMembershipCard *string,
+		lawCertificate *string,
+		CV *string,
+		coverLetter *string,
+	) (*LoginResultUser, error)
 }
 
 //LoginResultUser is the typing for returning login successful data to user
 type LoginResultUser struct {
-	Token string      `json:"token"`
-	User  models.User `json:"user"`
+	Token    string           `json:"token"`
+	User     models.User      `json:"user"`
+	Lawyer   *models.Lawyer   `json:"lawyer"`
+	Customer *models.Customer `json:"customer"`
 }
 
 // NewUserSvc exposed the ORM to the user functions in the module
@@ -103,6 +155,64 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 	return &_User, nil
 }
 
+//LoginUser logs in the user
+func (orm *ORM) LoginUser(ctx context.Context, email string, password string) (*LoginResultUser, error) {
+	var _User models.User
+
+	//check if email is in db
+	err := orm.DB.DB.First(&_User, "email = ?", email).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("UserNotFound")
+		}
+		return nil, err
+	}
+
+	//check if the person is suspended or not
+	if _User.SuspendedAt != nil {
+		return nil, errors.New("AccountSuspended")
+	}
+
+	//since email in db, lets validate hash and then send back
+	isSame := validatehash.ValidateCipher(password, _User.Password)
+	if isSame == false {
+		return nil, errors.New("PasswordIncorrect")
+	}
+
+	//sign token
+	token, signTokenErrr := signjwt.SignJWT(jwt.MapClaims{
+		"id":   _User.ID,
+		"type": _User.Type,
+	}, utils.MustGet("USER_SECRET"))
+
+	if signTokenErrr != nil {
+		return nil, signTokenErrr
+	}
+
+	var _Customer models.Customer
+	var _Lawyer models.Lawyer
+
+	custErr := orm.DB.DB.First(&_Customer, "user_id = ?", _User.ID).Error
+	_ = orm.DB.DB.First(&_Lawyer, "user_id = ?", _User.ID).Error
+
+	if errors.Is(custErr, gorm.ErrRecordNotFound) {
+		return &LoginResultUser{
+			Token:    token,
+			User:     _User,
+			Lawyer:   &_Lawyer,
+			Customer: nil,
+		}, nil
+	}
+
+	return &LoginResultUser{
+		Token:    token,
+		User:     _User,
+		Lawyer:   nil,
+		Customer: &_Customer,
+	}, nil
+
+}
+
 //ResendUserCode helps to resend a new code
 func (orm *ORM) ResendUserCode(ctx context.Context, userID string) (*models.User, error) {
 	var _User models.User
@@ -171,7 +281,338 @@ func (orm *ORM) VerifyUserEmail(ctx context.Context, userID string, code string)
 	}
 
 	return &LoginResultUser{
-		Token: token,
-		User:  _User,
+		Token:    token,
+		User:     _User,
+		Lawyer:   nil,
+		Customer: nil,
 	}, nil
+}
+
+//UpdateUserAndCustomer udpates the user and customer
+func (orm *ORM) UpdateUserAndCustomer(
+	ctx context.Context,
+	userID string,
+	lastName *string,
+	firstName *string,
+	otherNames *string,
+	phone *string,
+	email *string,
+
+	customerType *string,
+	tin *string,
+	digitalAddress *string,
+	addressCountry *string,
+	addressCity *string,
+	addressStreetName *string,
+	addressNumber *string,
+	companyName *string,
+	companyEntityType *string,
+	companyEntityTypeOther *string,
+	companyCountryOfRegistration *string,
+	companyDateOfRegistration *time.Time,
+	companyRegistrationNumber *string,
+) (*LoginResultUser, error) {
+
+	var _User models.User
+
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("UserNotFound")
+	}
+
+	if lastName != nil {
+		_User.LastName = lastName
+	}
+	if firstName != nil {
+		_User.FirstName = firstName
+	}
+	if otherNames != nil {
+		_User.OtherNames = otherNames
+	}
+
+	if phone != nil {
+		log.Println("2", &phone)
+		_User.Phone = phone
+		nowTime := time.Now()
+		_User.PhoneVerifiedAt = &nowTime
+	}
+	if email != nil {
+		_User.Email = *email
+		nowTime := time.Now()
+		_User.EmailVerifiedAt = &nowTime
+	}
+
+	//for customer
+	var _Customer models.Customer
+
+	custFetcherr := orm.DB.DB.First(&_Customer, "user_id = ?", userID).Error
+	if errors.Is(custFetcherr, gorm.ErrRecordNotFound) {
+		return nil, errors.New("CustomerNotFound")
+	}
+
+	if customerType != nil {
+		_Customer.Type = customerType
+	}
+
+	if digitalAddress != nil {
+		_Customer.DigitalAddress = digitalAddress
+	}
+
+	if addressCountry != nil {
+		_Customer.AddressCountry = addressCountry
+	}
+	if addressCity != nil {
+		_Customer.AddressCountry = addressCity
+	}
+	if addressCity != nil {
+		_Customer.AddressCity = addressCity
+	}
+	if addressStreetName != nil {
+		_Customer.AddressStreetName = addressStreetName
+	}
+	if addressNumber != nil {
+		_Customer.AddressNumber = addressNumber
+	}
+	if companyName != nil {
+		_Customer.CompanyName = companyName
+	}
+	if companyEntityType != nil {
+		_Customer.CompanyEntityType = companyEntityType
+	}
+	if companyEntityTypeOther != nil {
+		_Customer.CompanyEntityTypeOther = companyEntityTypeOther
+	}
+	if companyCountryOfRegistration != nil {
+		_Customer.CompanyCountryOfRegistration = companyCountryOfRegistration
+	}
+	if companyDateOfRegistration != nil {
+		_Customer.CompanyDateOfRegistration = companyDateOfRegistration
+	}
+	if companyRegistrationNumber != nil {
+		_Customer.CompanyRegistrationNumber = companyRegistrationNumber
+	}
+
+	//save em
+	orm.DB.DB.Save(&_User)
+	orm.DB.DB.Save(&_Customer)
+
+	//sign token
+	token, signTokenErrr := signjwt.SignJWT(jwt.MapClaims{
+		"id":   _User.ID,
+		"type": _User.Type,
+	}, utils.MustGet("USER_SECRET"))
+
+	if signTokenErrr != nil {
+		return nil, signTokenErrr
+	}
+
+	return &LoginResultUser{
+		Token:    token,
+		User:     _User,
+		Lawyer:   nil,
+		Customer: &_Customer,
+	}, nil
+}
+
+//UpdateUserAndLawyer updates user details plus lawyer details
+func (orm *ORM) UpdateUserAndLawyer(
+	ctx context.Context,
+	userID string,
+	lastName *string,
+	firstName *string,
+	otherNames *string,
+	phone *string,
+	email *string,
+
+	tin *string,
+	digitalAddress *string,
+	addressCountry *string,
+	addressCity *string,
+	addressStreetName *string,
+	addressNumber *string,
+	firstYearOfBarAdmission *string,
+	licenseNumber *string,
+	nationalIDFront *string,
+	nationalIDBack *string,
+	bARMembershipCard *string,
+	lawCertificate *string,
+	CV *string,
+	coverLetter *string,
+) (*LoginResultUser, error) {
+	var _User models.User
+
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("UserNotFound")
+	}
+
+	if lastName != nil {
+		_User.LastName = lastName
+	}
+	if otherNames != nil {
+		_User.OtherNames = otherNames
+	}
+	if firstName != nil {
+		_User.FirstName = firstName
+	}
+	if phone != nil {
+		_User.Phone = phone
+		nowTime := time.Now()
+		_User.PhoneVerifiedAt = &nowTime
+	}
+	if email != nil {
+		_User.Email = *email
+		nowTime := time.Now()
+		_User.EmailVerifiedAt = &nowTime
+	}
+
+	//for customer
+	var _Lawyer models.Lawyer
+
+	lawyerFetcherr := orm.DB.DB.First(&_Lawyer, "user_id = ?", userID).Error
+	if errors.Is(lawyerFetcherr, gorm.ErrRecordNotFound) {
+		return nil, errors.New("LawyerNotFound")
+	}
+
+	if tin != nil {
+		_Lawyer.TIN = tin
+	}
+	if digitalAddress != nil {
+		_Lawyer.DigitalAddress = digitalAddress
+	}
+	if addressCountry != nil {
+		_Lawyer.AddressCountry = addressCountry
+	}
+	if addressCity != nil {
+		_Lawyer.AddressCity = addressCity
+	}
+	if addressStreetName != nil {
+		_Lawyer.AddressStreetName = addressStreetName
+	}
+	if addressNumber != nil {
+		_Lawyer.AddressNumber = addressNumber
+	}
+	if firstYearOfBarAdmission != nil {
+		_Lawyer.FirstYearOfBarAdmission = firstYearOfBarAdmission
+	}
+	if licenseNumber != nil {
+		_Lawyer.LicenseNumber = licenseNumber
+	}
+	if nationalIDFront != nil {
+		_Lawyer.NationalIDFront = nationalIDFront
+	}
+	if nationalIDBack != nil {
+		_Lawyer.NationalIDBack = nationalIDBack
+	}
+	if bARMembershipCard != nil {
+		_Lawyer.BARMembershipCard = bARMembershipCard
+	}
+	if lawCertificate != nil {
+		_Lawyer.LawCertificate = lawCertificate
+	}
+	if CV != nil {
+		_Lawyer.CV = CV
+	}
+	if coverLetter != nil {
+		_Lawyer.CoverLetter = coverLetter
+	}
+
+	//save em
+	orm.DB.DB.Save(&_User)
+	orm.DB.DB.Save(&_Lawyer)
+
+	//sign token
+	token, signTokenErrr := signjwt.SignJWT(jwt.MapClaims{
+		"id":   _User.ID,
+		"type": _User.Type,
+	}, utils.MustGet("USER_SECRET"))
+
+	if signTokenErrr != nil {
+		return nil, signTokenErrr
+	}
+
+	return &LoginResultUser{
+		Token:    token,
+		User:     _User,
+		Lawyer:   &_Lawyer,
+		Customer: nil,
+	}, nil
+}
+
+//DeleteUser deletes a user
+func (orm *ORM) DeleteUser(ctx context.Context, userID string) (bool, error) {
+	var _User models.User
+
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("UserNotFound")
+	}
+	if _User.Type == "Customer" {
+		var _Customer models.Customer
+		_ = orm.DB.DB.Where("user_id = ?", userID).Delete(&_Customer).Error
+	} else {
+		var _Lawyer models.Lawyer
+		_ = orm.DB.DB.Where("user_id = ?", userID).Delete(&_Lawyer).Error
+	}
+
+	//delete
+	delErr := orm.DB.DB.Delete(&_User).Error
+	if delErr != nil {
+		return false, delErr
+	}
+
+	// return success
+	return true, nil
+}
+
+//SuspendUser suspends the user in question
+func (orm *ORM) SuspendUser(ctx context.Context, userID string, adminID string, reason string) (bool, error) {
+	var _User models.User
+
+	//find
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("UserNotFound")
+		}
+		return false, err
+	}
+
+	//update suspendedAt
+	updateError := orm.DB.DB.Model(&_User).Updates(map[string]interface{}{
+		"SuspendedAt":     time.Now(),
+		"SuspendedReason": reason,
+		"SuspendedByID":   adminID,
+	}).Error
+	if updateError != nil {
+		return false, updateError
+	}
+
+	//send mail plus reason
+	return true, nil
+}
+
+//RestoreUser restores the user in question
+func (orm *ORM) RestoreUser(ctx context.Context, userID string) (bool, error) {
+	var _User models.User
+
+	//find
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, errors.New("UserNotFound")
+		}
+		return false, err
+	}
+
+	//update suspendedAt
+	updateError := orm.DB.DB.Model(&_User).Updates(map[string]interface{}{
+		"SuspendedAt":     nil,
+		"SuspendedReason": nil,
+		"SuspendedByID":   nil,
+	}).Error
+	if updateError != nil {
+		return false, updateError
+	}
+	return true, nil
 }
