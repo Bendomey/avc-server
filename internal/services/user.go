@@ -27,6 +27,8 @@ type UserService interface {
 	DeleteUser(ctx context.Context, userID string) (bool, error)
 	SuspendUser(ctx context.Context, userID string, adminID string, reason string) (bool, error)
 	RestoreUser(ctx context.Context, userID string) (bool, error)
+	SendPhoneVerificationCode(ctx context.Context, phone string) (bool, error)
+	VerifyPhoneVerificationCode(ctx context.Context, phone string, code string) (bool, error)
 	UpdateUserAndCustomer(
 		ctx context.Context,
 		userID string,
@@ -288,6 +290,47 @@ func (orm *ORM) VerifyUserEmail(ctx context.Context, userID string, code string)
 	}, nil
 }
 
+//SendPhoneVerificationCode sends phone code
+func (orm *ORM) SendPhoneVerificationCode(ctx context.Context, phone string) (bool, error) {
+
+	//generate code
+	code := generatecode.GenerateCode(6)
+
+	//save in redis and expire in an hours time
+	redisErr := orm.rdb.Set(ctx, fmt.Sprintf("%s", phone), code, 1*time.Hour).Err()
+	if redisErr != nil {
+		return false, redisErr
+	}
+
+	// send code to phone
+	log.Println("Generated code for phone :: ", code)
+
+	return true, nil
+}
+
+//VerifyPhoneVerificationCode sends phone code
+func (orm *ORM) VerifyPhoneVerificationCode(ctx context.Context, phone string, code string) (bool, error) {
+
+	value, err := orm.rdb.Get(ctx, fmt.Sprintf("%s", phone)).Result()
+	if err == redis.Nil {
+		return false, errors.New("CodeHasExpired")
+	} else if err != nil {
+		return false, err
+	}
+
+	if value != code {
+		return false, errors.New("CodeIncorrect")
+	}
+
+	//invalidate the redis data pertaining to this phone
+	redisErr := orm.rdb.Set(ctx, fmt.Sprintf("%s", phone), nil, 1*time.Second).Err()
+	if redisErr != nil {
+		return false, redisErr
+	}
+
+	return true, nil
+}
+
 //UpdateUserAndCustomer udpates the user and customer
 func (orm *ORM) UpdateUserAndCustomer(
 	ctx context.Context,
@@ -318,6 +361,11 @@ func (orm *ORM) UpdateUserAndCustomer(
 	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("UserNotFound")
+	}
+
+	if _User.SetupAt == nil {
+		nowTime := time.Now()
+		_User.SetupAt = &nowTime
 	}
 
 	if lastName != nil {
@@ -446,9 +494,15 @@ func (orm *ORM) UpdateUserAndLawyer(
 		return nil, errors.New("UserNotFound")
 	}
 
+	if _User.SetupAt == nil {
+		nowTime := time.Now()
+		_User.SetupAt = &nowTime
+	}
+
 	if lastName != nil {
 		_User.LastName = lastName
 	}
+
 	if otherNames != nil {
 		_User.OtherNames = otherNames
 	}
