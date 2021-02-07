@@ -112,6 +112,46 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 				}, nil
 			},
 		},
+		"sendPhoneVerificationCode": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Generates a new code and sends to user's phone",
+			Args: graphql.FieldConfigArgument{
+				"phone": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				phone := p.Args["phone"].(string)
+
+				_Response, err := svcs.UserServices.SendPhoneVerificationCode(p.Context, phone)
+				if err != nil {
+					return nil, err
+				}
+				return _Response, nil
+			},
+		},
+		"verifyPhoneCode": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Verifies if code sumbitted is same as what is saved",
+			Args: graphql.FieldConfigArgument{
+				"phone": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+				"code": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				phone := p.Args["phone"].(string)
+				code := p.Args["code"].(string)
+
+				_Response, err := svcs.UserServices.VerifyPhoneVerificationCode(p.Context, phone, code)
+				if err != nil {
+					return nil, err
+				}
+				return _Response, nil
+			},
+		},
 		"updateUserAndCustomer": {
 			Type:        graphql.NewNonNull(schemas.LoginUserType),
 			Description: "Updates Customer Details Plus Users Details ... They Are Connected",
