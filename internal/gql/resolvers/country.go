@@ -21,42 +21,40 @@ var countriesQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterCountryType,
 				},
 			},
-			Resolve: utils.AuthenticateAdmin(
-				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
-					argument := p.Args
-					filterQuery, filterErr := utils.GenerateQuery(argument)
-					if filterErr != nil {
-						return nil, filterErr
-					}
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				argument := p.Args
+				filterQuery, filterErr := utils.GenerateQuery(argument)
+				if filterErr != nil {
+					return nil, filterErr
+				}
 
-					//fields
-					takeFilter, filterOk := argument["filter"].(map[string]interface{})
-					var name, description *string
+				//fields
+				takeFilter, filterOk := argument["filter"].(map[string]interface{})
+				var name, description *string
 
-					if filterOk {
-						takeName, nameOk := takeFilter["name"].(string)
-						takeDescription, descriptionOk := takeFilter["description"].(string)
-						if nameOk {
-							name = &takeName
-						}
-						if descriptionOk {
-							description = &takeDescription
-						}
+				if filterOk {
+					takeName, nameOk := takeFilter["name"].(string)
+					takeDescription, descriptionOk := takeFilter["description"].(string)
+					if nameOk {
+						name = &takeName
 					}
+					if descriptionOk {
+						description = &takeDescription
+					}
+				}
 
-					_Response, err := svcs.CountryServices.ReadCountries(p.Context, filterQuery, name, description)
-					if err != nil {
-						return nil, err
-					}
-					var newResponse []interface{}
-					//loop to get the types
-					for _, dbRec := range _Response {
-						rec := transformations.DBCountryToGQLUser(dbRec)
-						newResponse = append(newResponse, rec)
-					}
-					return newResponse, nil
-				},
-			),
+				_Response, err := svcs.CountryServices.ReadCountries(p.Context, filterQuery, name, description)
+				if err != nil {
+					return nil, err
+				}
+				var newResponse []interface{}
+				//loop to get the types
+				for _, dbRec := range _Response {
+					rec := transformations.DBCountryToGQLUser(dbRec)
+					newResponse = append(newResponse, rec)
+				}
+				return newResponse, nil
+			},
 		},
 		"countriesLength": {
 			Type:        graphql.NewNonNull(graphql.Int),
@@ -66,35 +64,33 @@ var countriesQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterCountryType,
 				},
 			},
-			Resolve: utils.AuthenticateAdmin(
-				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
-					argument := p.Args
-					filterQuery, filterErr := utils.GenerateQuery(argument)
-					if filterErr != nil {
-						return nil, filterErr
-					}
-					//fields
-					takeFilter, filterOk := argument["filter"].(map[string]interface{})
-					var name, description *string
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				argument := p.Args
+				filterQuery, filterErr := utils.GenerateQuery(argument)
+				if filterErr != nil {
+					return nil, filterErr
+				}
+				//fields
+				takeFilter, filterOk := argument["filter"].(map[string]interface{})
+				var name, description *string
 
-					if filterOk {
-						takeName, nameOk := takeFilter["name"].(string)
-						takeDescription, descriptionOk := takeFilter["description"].(string)
-						if nameOk {
-							name = &takeName
-						}
-						if descriptionOk {
-							description = &takeDescription
-						}
+				if filterOk {
+					takeName, nameOk := takeFilter["name"].(string)
+					takeDescription, descriptionOk := takeFilter["description"].(string)
+					if nameOk {
+						name = &takeName
 					}
+					if descriptionOk {
+						description = &takeDescription
+					}
+				}
 
-					_Response, err := svcs.CountryServices.ReadCountriesLength(p.Context, filterQuery, name, description)
-					if err != nil {
-						return nil, err
-					}
-					return _Response, nil
-				},
-			),
+				_Response, err := svcs.CountryServices.ReadCountriesLength(p.Context, filterQuery, name, description)
+				if err != nil {
+					return nil, err
+				}
+				return _Response, nil
+			},
 		},
 		"country": {
 			Type:        schemas.CountryType,
