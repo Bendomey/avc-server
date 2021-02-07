@@ -14,6 +14,7 @@ func DBUserToGQLUser(i *models.User) interface{} {
 		"phone":           i.Phone,
 		"emailVerifiedAt": i.EmailVerifiedAt,
 		"phoneVerifiedAt": i.PhoneVerifiedAt,
+		"setupAt":         i.SetupAt,
 		"createdAt":       i.CreatedAt,
 		"updatedAt":       i.UpdatedAt,
 	}
@@ -53,6 +54,7 @@ func DBUserToGQLCustomer(i *models.Customer) interface{} {
 
 	return map[string]interface{}{
 		"id":                           i.ID.String(),
+		"type":                         i.Type,
 		"digitalAddress":               i.DigitalAddress,
 		"addressCountry":               i.AddressCountry,
 		"addressCity":                  i.AddressCity,
