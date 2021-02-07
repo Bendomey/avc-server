@@ -26,7 +26,7 @@ var CustomerType = graphql.NewObject(
 				Type: graphql.NewNonNull(UserType),
 			},
 			"type": &graphql.Field{
-				Type: graphql.NewNonNull(enumTypeCustomerType),
+				Type: enumTypeCustomerType,
 			},
 			"tin": &graphql.Field{
 				Type: graphql.String,
