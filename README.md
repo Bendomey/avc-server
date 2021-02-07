@@ -60,6 +60,8 @@ Builds code into binary for production
 - [x] Delete
 - [x] Suspend
 - [x] Restore
+- [x] Send Phone Verification Code
+- [x] Verify Phone Code
 - [ ] Read All
 - [ ] Read one
 - [ ] Count
