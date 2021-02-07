@@ -20,6 +20,7 @@ type User struct {
 	Phone           *string `gorm:"unique"`
 	EmailVerifiedAt *time.Time
 	PhoneVerifiedAt *time.Time
+	SetupAt         *time.Time
 
 	SuspendedAt     *time.Time
 	SuspendedReason *string
