@@ -10,9 +10,6 @@ var LawyerType = graphql.NewObject(
 			"id": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.ID),
 			},
-			"name": &graphql.Field{
-				Type: graphql.NewNonNull(graphql.String),
-			},
 			"user": &graphql.Field{
 				Type: UserType,
 			},
