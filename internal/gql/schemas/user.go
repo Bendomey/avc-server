@@ -44,6 +44,9 @@ var UserType = graphql.NewObject(
 			"emailVerifiedAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
+			"setupAt": &graphql.Field{
+				Type: graphql.DateTime,
+			},
 			"phoneVerifiedAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
