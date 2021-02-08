@@ -288,9 +288,12 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 						return nil, err
 					}
 					return map[string]interface{}{
-						"user":  transformations.DBUserToGQLUser(&_Response.User),
-						"token": _Response.Token,
+						"user":     transformations.DBUserToGQLUser(&_Response.User),
+						"lawyer":   transformations.DBUserToGQLLawyer(_Response.Lawyer),
+						"customer": transformations.DBUserToGQLCustomer(_Response.Customer),
+						"token":    _Response.Token,
 					}, nil
+
 				},
 			),
 		},
@@ -435,8 +438,10 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 						return nil, err
 					}
 					return map[string]interface{}{
-						"user":  transformations.DBUserToGQLUser(&_Response.User),
-						"token": _Response.Token,
+						"user":     transformations.DBUserToGQLUser(&_Response.User),
+						"lawyer":   transformations.DBUserToGQLLawyer(_Response.Lawyer),
+						"customer": transformations.DBUserToGQLCustomer(_Response.Customer),
+						"token":    _Response.Token,
 					}, nil
 				},
 			),
