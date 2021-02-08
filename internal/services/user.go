@@ -292,6 +292,13 @@ func (orm *ORM) VerifyUserEmail(ctx context.Context, userID string, code string)
 
 //SendPhoneVerificationCode sends phone code
 func (orm *ORM) SendPhoneVerificationCode(ctx context.Context, phone string) (bool, error) {
+	var _User models.User
+
+	//check if in db
+	_Results := orm.DB.DB.First(&_User, "phone = ?", phone)
+	if _Results.RowsAffected > 0 {
+		return false, errors.New("PhoneNumberAlreadyExists")
+	}
 
 	//generate code
 	code := generatecode.GenerateCode(6)
