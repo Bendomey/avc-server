@@ -102,7 +102,7 @@ var UpdateCustomerInput = graphql.NewInputObject(
 				Type: graphql.String,
 			},
 			"type": &graphql.InputObjectFieldConfig{
-				Type: EnumTypeUserType,
+				Type: enumTypeCustomerType,
 			},
 			"tin": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
