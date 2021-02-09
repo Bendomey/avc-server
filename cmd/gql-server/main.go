@@ -2,6 +2,7 @@ package main
 
 import (
 	log "github.com/Bendomey/avc-server/internal/logger"
+	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/redis"
 	"github.com/Bendomey/avc-server/internal/services"
@@ -18,8 +19,11 @@ func main() {
 		log.Panic("[ORM ERR] :: ", err)
 	}
 
+	//connect mailgun
+	mg := mail.NewMailingSvc()
+
 	//start services here
-	services := services.Factory(orm, rdb)
+	services := services.Factory(orm, rdb, mg)
 
 	// server invoked here
 	server.Run(services)

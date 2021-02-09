@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/go-redis/redis/v8"
 )
@@ -16,15 +17,15 @@ type Services struct {
 type ORM struct {
 	DB  *orm.ORM
 	rdb *redis.Client
+	mg  mail.MailingService
 }
 
 //Factory activates all services
-func Factory(orm *orm.ORM, rdb *redis.Client) Services {
-
+func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 	//activate admin service
-	adminService := NewAdminSvc(orm, rdb)
-	countryService := NewCountrySvc(orm, rdb)
-	userService := NewUserSvc(orm, rdb)
+	adminService := NewAdminSvc(orm, rdb, mg)
+	countryService := NewCountrySvc(orm, rdb, mg)
+	userService := NewUserSvc(orm, rdb, mg)
 
 	return Services{
 		AdminServices:   adminService,

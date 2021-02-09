@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/orm/models"
 	"github.com/Bendomey/avc-server/pkg/utils"
@@ -85,8 +86,8 @@ type LoginResultUser struct {
 }
 
 // NewUserSvc exposed the ORM to the user functions in the module
-func NewUserSvc(db *orm.ORM, rdb *redis.Client) UserService {
-	return &ORM{db, rdb}
+func NewUserSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) UserService {
+	return &ORM{db, rdb, mg}
 }
 
 // CreateUser creates a user when invoked
@@ -153,6 +154,9 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 
 	// send code to email
 	log.Println("Generated code :: ", code)
+	subject := "Welcome To African Venture Counsel - Verify Your Account"
+	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
+	orm.mg.SendTransactionalMail(ctx, subject, body, email)
 
 	return &_User, nil
 }
@@ -236,6 +240,9 @@ func (orm *ORM) ResendUserCode(ctx context.Context, userID string) (*models.User
 
 	// send code to email
 	log.Println("Generated code :: ", code)
+	subject := "Welcome To African Venture Counsel - Verify Your Account"
+	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
+	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 
 	return &_User, nil
 }

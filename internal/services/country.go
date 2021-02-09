@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/orm/models"
 	"github.com/Bendomey/avc-server/pkg/utils"
@@ -23,8 +24,8 @@ type CountryService interface {
 }
 
 // NewCountrySvc exposed the ORM to the country functions in the module
-func NewCountrySvc(db *orm.ORM, rdb *redis.Client) CountryService {
-	return &ORM{db, rdb}
+func NewCountrySvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) CountryService {
+	return &ORM{db, rdb, mg}
 }
 
 //CreateCountry creates a country

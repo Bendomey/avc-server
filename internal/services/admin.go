@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/orm/models"
 	"github.com/Bendomey/avc-server/pkg/utils"
@@ -40,8 +41,8 @@ type LoginResultAdmin struct {
 }
 
 // NewAdminSvc exposed the ORM to the admin functions in the module
-func NewAdminSvc(db *orm.ORM, rdb *redis.Client) AdminService {
-	return &ORM{db, rdb}
+func NewAdminSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) AdminService {
+	return &ORM{db, rdb, mg}
 }
 
 // LoginAdmin checks if the email is having valid credentials and returns them a unique, secured token to help them get resources from app
@@ -103,6 +104,9 @@ func (orm *ORM) CreateAdmin(ctx context.Context, name string, email string, role
 	}
 
 	//send welcome message to email plus new generated password
+	subject := "Welcome To African Venture Counsel"
+	body := fmt.Sprintf("You can login with %s as your email address and %s as your password is", email, password)
+	orm.mg.SendTransactionalMail(ctx, subject, body, email)
 
 	//return admin as response
 	return &_Admin, nil
