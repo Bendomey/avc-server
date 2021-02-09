@@ -1,6 +1,7 @@
 package sms
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -18,7 +19,7 @@ func init() {
 }
 
 //Send text message
-func Send(to string, body string) error {
+func Send(to string, body string) (map[string]interface{}, error) {
 	urlStr := fmt.Sprintf("https://api.twilio.com/2010-04-01/Accounts/%s/Messages.json", accountSid)
 
 	msgData := url.Values{}
@@ -33,9 +34,12 @@ func Send(to string, body string) error {
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	_, err := client.Do(req)
+	resp, _ := client.Do(req)
+	var data map[string]interface{}
+	decoder := json.NewDecoder(resp.Body)
+	err := decoder.Decode(&data)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return data, nil
 }

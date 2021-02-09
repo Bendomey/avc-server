@@ -322,8 +322,9 @@ func (orm *ORM) SendPhoneVerificationCode(ctx context.Context, phone string) (bo
 	// send code to phone
 	log.Println("Generated code for phone :: ", code)
 	body := fmt.Sprintf("Use this code %s to verify your phone number on our website", code)
-	phoneErr := sms.Send(phone, body)
-	log.Println(phoneErr)
+	resp, phoneErr := sms.Send(phone, body)
+	log.Println("resp", resp)
+	log.Println("error", phoneErr)
 	return true, nil
 }
 
