@@ -5,6 +5,7 @@ import (
 
 	log "github.com/Bendomey/avc-server/internal/logger"
 	"github.com/Bendomey/avc-server/internal/orm/migration"
+	"github.com/getsentry/raven-go"
 	"gorm.io/gorm"
 
 	"github.com/Bendomey/avc-server/pkg/utils"
@@ -34,6 +35,7 @@ func init() {
 func Factory() (*ORM, error) {
 	db, err := gorm.Open(postgres.Open(fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", host, user, password, dbname, port, sslmode)), &gorm.Config{})
 	if err != nil {
+		raven.CaptureError(err, nil)
 		log.Panic("[ORM] err: ", err)
 	}
 	log.Info("[ORM] :: Database connection initialized.")
@@ -42,6 +44,7 @@ func Factory() (*ORM, error) {
 	}
 	if autoMigrate {
 		err = migration.ServiceAutoMigration(orm.DB, seedDB)
+		raven.CaptureError(err, nil)
 	}
 
 	return orm, err

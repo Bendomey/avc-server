@@ -8,6 +8,7 @@ import (
 	"github.com/Bendomey/avc-server/internal/services"
 	"github.com/Bendomey/avc-server/pkg/server"
 	"github.com/Bendomey/avc-server/pkg/utils"
+	"github.com/getsentry/raven-go"
 )
 
 func main() {
@@ -18,6 +19,7 @@ func main() {
 	// creates a new ORM instance to send it to our server
 	orm, err := orm.Factory()
 	if err != nil {
+		raven.CaptureError(err, nil)
 		log.Panic("[ORM ERR] :: ", err)
 	}
 

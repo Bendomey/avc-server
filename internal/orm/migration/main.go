@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	log "github.com/Bendomey/avc-server/internal/logger"
+	"github.com/getsentry/raven-go"
 
 	"github.com/Bendomey/avc-server/internal/orm/migration/jobs"
 	"github.com/Bendomey/avc-server/internal/orm/models"
@@ -35,6 +36,7 @@ func ServiceAutoMigration(db *gorm.DB, seedDB bool) error {
 		log.Info("[Migration.InitSchema] Initializing database schema")
 		db.Exec("create extension \"uuid-ossp\";")
 		if err := updateMigration(db); err != nil {
+			raven.CaptureError(err, nil)
 			return fmt.Errorf("[Migration.InitSchema]: %v", err)
 		}
 		// Add more jobs, etc here
@@ -43,6 +45,7 @@ func ServiceAutoMigration(db *gorm.DB, seedDB bool) error {
 	m.Migrate()
 
 	if err := updateMigration(db); err != nil {
+		raven.CaptureError(err, nil)
 		return err
 	}
 
