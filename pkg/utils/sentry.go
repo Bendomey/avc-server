@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/getsentry/raven-go"
 	"github.com/getsentry/sentry-go"
 )
 
@@ -34,5 +35,6 @@ func Sentry() {
 	// Set the timeout to the maximum duration the program can afford to wait.
 	defer sentry.Flush(2 * time.Second)
 
-	sentry.CaptureMessage("It works!")
+	raven.SetDSN(dsn)
+
 }

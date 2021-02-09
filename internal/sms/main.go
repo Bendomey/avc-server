@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Bendomey/avc-server/pkg/utils"
+	"github.com/getsentry/raven-go"
 )
 
 var accountSid, authToken, from string
@@ -39,7 +40,11 @@ func Send(to string, body string) (map[string]interface{}, error) {
 	decoder := json.NewDecoder(resp.Body)
 	err := decoder.Decode(&data)
 	if err != nil {
+		raven.CaptureError(err, nil)
 		return nil, err
+	}
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
+		raven.CaptureMessage(data["message"].(string), nil)
 	}
 	return data, nil
 }

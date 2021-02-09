@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Bendomey/avc-server/pkg/utils"
+	"github.com/getsentry/raven-go"
 	"github.com/mailgun/mailgun-go/v4"
 )
 
@@ -46,6 +47,7 @@ func (mg *Mail) SendTransactionalMail(ctx context.Context, subject string, body 
 	_, _, err := mg.mg.Send(ctx, message)
 
 	if err != nil {
+		raven.CaptureError(err, nil)
 		return err
 	}
 	return nil

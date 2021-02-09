@@ -16,6 +16,7 @@ import (
 	"github.com/Bendomey/goutilities/pkg/signjwt"
 	"github.com/Bendomey/goutilities/pkg/validatehash"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/getsentry/raven-go"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 )
@@ -110,6 +111,7 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 	//create user
 	saveErr := orm.DB.DB.Select("Type", "Email", "Password").Create(&_User).Error
 	if saveErr != nil {
+		raven.CaptureError(saveErr, nil)
 		return nil, saveErr
 	}
 
@@ -325,6 +327,7 @@ func (orm *ORM) SendPhoneVerificationCode(ctx context.Context, phone string) (bo
 	resp, phoneErr := sms.Send(phone, body)
 	log.Println("resp", resp)
 	log.Println("error", phoneErr)
+
 	return true, nil
 }
 
