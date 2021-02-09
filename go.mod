@@ -6,6 +6,7 @@ go 1.15
 require (
 	github.com/Bendomey/goutilities v0.0.0-20201104205146-d5b8f238bf1b
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/getsentry/sentry-go v0.9.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-gormigrate/gormigrate/v2 v2.0.0
 	github.com/go-redis/redis v6.15.9+incompatible

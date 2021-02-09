@@ -7,9 +7,11 @@ import (
 	"github.com/Bendomey/avc-server/internal/redis"
 	"github.com/Bendomey/avc-server/internal/services"
 	"github.com/Bendomey/avc-server/pkg/server"
+	"github.com/Bendomey/avc-server/pkg/utils"
 )
 
 func main() {
+	utils.Sentry()
 	//connects to redis
 	rdb := redis.Factory()
 
