@@ -5,13 +5,14 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// DBUserToGQLUser transforms [user] db input to gql type
+// DBAdminToGQLAdmin transforms [user] db input to gql type
 func DBAdminToGQLAdmin(i *models.Admin) interface{} {
 	return map[string]interface{}{
 		"id":              i.ID.String(),
 		"fullname":        i.FullName,
 		"email":           i.Email,
 		"phone":           i.Phone,
+		"role":            i.Role,
 		"phoneVerifiedAt": i.PhoneVerifiedAt,
 		"createdAt":       i.CreatedAt,
 		"updatedAt":       i.UpdatedAt,
