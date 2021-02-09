@@ -10,6 +10,7 @@ import (
 	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/orm/models"
+	"github.com/Bendomey/avc-server/internal/sms"
 	"github.com/Bendomey/avc-server/pkg/utils"
 	"github.com/Bendomey/goutilities/pkg/generatecode"
 	"github.com/Bendomey/goutilities/pkg/signjwt"
@@ -156,7 +157,8 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
-	orm.mg.SendTransactionalMail(ctx, subject, body, email)
+	emailErr := orm.mg.SendTransactionalMail(ctx, subject, body, email)
+	log.Println(emailErr)
 
 	return &_User, nil
 }
@@ -242,7 +244,8 @@ func (orm *ORM) ResendUserCode(ctx context.Context, userID string) (*models.User
 	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
-	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
+	emailErr := orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
+	log.Println(emailErr)
 
 	return &_User, nil
 }
@@ -318,7 +321,9 @@ func (orm *ORM) SendPhoneVerificationCode(ctx context.Context, phone string) (bo
 
 	// send code to phone
 	log.Println("Generated code for phone :: ", code)
-
+	body := fmt.Sprintf("Use this code %s to verify your phone number on our website", code)
+	phoneErr := sms.Send(phone, body)
+	log.Println(phoneErr)
 	return true, nil
 }
 
