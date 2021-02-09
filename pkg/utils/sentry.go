@@ -14,7 +14,7 @@ func init() {
 	environment = MustGet("SENTRY_ENVIRONMENT")
 }
 
-//Sentry starts sentry
+//Sentry starts
 func Sentry() {
 	err := sentry.Init(sentry.ClientOptions{
 		// Either set your DSN here or set the SENTRY_DSN environment variable.
@@ -34,4 +34,5 @@ func Sentry() {
 	// Set the timeout to the maximum duration the program can afford to wait.
 	defer sentry.Flush(2 * time.Second)
 
+	sentry.CaptureMessage("It works!")
 }
