@@ -29,6 +29,7 @@ func DBUserToGQLLawyer(i *models.Lawyer) interface{} {
 		"id":                      i.ID.String(),
 		"digitalAddress":          i.DigitalAddress,
 		"addressCountry":          i.AddressCountry,
+		"user":                    DBUserToGQLUser(&i.User),
 		"addressCity":             i.AddressCity,
 		"addressStreetName":       i.AddressStreetName,
 		"addressNumber":           i.AddressNumber,
