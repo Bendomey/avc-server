@@ -64,17 +64,39 @@ var CustomerType = graphql.NewObject(
 			"companyRegistrationNumber": &graphql.Field{
 				Type: graphql.String,
 			},
-			"suspendedAt": &graphql.Field{
-				Type: graphql.DateTime,
-			},
-			"suspendedBy": &graphql.Field{
-				Type: AdminType,
-			},
+
 			"createdAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
 			},
 			"updatedAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
+			},
+		},
+	},
+)
+
+//FilterCustomerType  for filtering customers
+var FilterCustomerType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "GetCustomersFilter",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"suspended": &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+			"type": &graphql.InputObjectFieldConfig{
+				Type: enumTypeCustomerType,
+			},
+			"search": &graphql.InputObjectFieldConfig{
+				Type: SearchType,
+			},
+			"order": &graphql.InputObjectFieldConfig{
+				Type: enumTypeForOrder,
+			},
+			"orderBy": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"dateRange": &graphql.InputObjectFieldConfig{
+				Type: DateRangeType,
 			},
 		},
 	},
