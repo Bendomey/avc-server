@@ -77,6 +77,8 @@ type UserService interface {
 		CV *string,
 		coverLetter *string,
 	) (*LoginResultUser, error)
+	ReadCustomers(ctx context.Context, filterQuery *utils.FilterQuery, customerType *string, isSuspended *bool) ([]models.Customer, error)
+	ReadCustomersLength(ctx context.Context, filterQuery *utils.FilterQuery, customerType *string, isSuspended *bool) (*int64, error)
 }
 
 //LoginResultUser is the typing for returning login successful data to user
@@ -692,4 +694,97 @@ func (orm *ORM) RestoreUser(ctx context.Context, userID string) (bool, error) {
 		return false, updateError
 	}
 	return true, nil
+}
+
+//ReadCustomers reads the customers in the system
+func (orm *ORM) ReadCustomers(ctx context.Context, filterQuery *utils.FilterQuery, customerType *string, isSuspended *bool) ([]models.Customer, error) {
+	var _Customers []models.Customer
+
+	_Results := orm.DB.DB
+
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("\"User\".created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if customerType != nil {
+		_Results = _Results.Where("customers.Type = ?", customerType)
+	}
+
+	if isSuspended != nil {
+		suspended := *isSuspended
+		if suspended {
+			_Results = _Results.Where("\"User\".suspended_at IS NOT NULL")
+		} else {
+			_Results = _Results.Where("\"User\".suspended_at IS NULL")
+		}
+	}
+
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("User").
+		Order(fmt.Sprintf("%s %s", filterQuery.OrderBy, filterQuery.Order)).
+		Limit(filterQuery.Limit).Offset(filterQuery.Skip).
+		Find(&_Customers)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return _Customers, nil
+}
+
+//ReadCustomersLength reads the length customers in the system
+func (orm *ORM) ReadCustomersLength(ctx context.Context, filterQuery *utils.FilterQuery, customerType *string, isSuspended *bool) (*int64, error) {
+	var _CustomersLength int64
+
+	_Results := orm.DB.DB.Model(&models.Customer{})
+
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("\"User\".created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if customerType != nil {
+		_Results = _Results.Where("customers.Type = ?", customerType)
+	}
+
+	if isSuspended != nil {
+		suspended := *isSuspended
+		if suspended {
+			_Results = _Results.Where("\"User\".suspended_at IS NOT NULL")
+		} else {
+			_Results = _Results.Where("\"User\".suspended_at IS NULL")
+		}
+	}
+
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("User").Count(&_CustomersLength)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return &_CustomersLength, nil
 }
