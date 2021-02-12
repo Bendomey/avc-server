@@ -1,7 +1,6 @@
 package resolvers
 
 import (
-	"log"
 	"time"
 
 	"github.com/Bendomey/avc-server/internal/gql/schemas"
@@ -56,7 +55,6 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 				var newResponse []interface{}
 				//loop to get the types
 				for _, dbRec := range _Response {
-					log.Print(dbRec)
 					rec := transformations.DBUserToGQLCustomer(&dbRec)
 					newResponse = append(newResponse, rec)
 				}
@@ -97,6 +95,83 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 				}
 
 				_Response, err := svcs.UserServices.ReadCustomersLength(p.Context, filterQuery, customerType, isSuspended)
+				if err != nil {
+					return nil, err
+				}
+				return _Response, nil
+			},
+		},
+		"lawyers": {
+			Type:        graphql.NewNonNull(graphql.NewList(schemas.LawyerType)),
+			Description: "Get Lawyers in the system",
+			Args: graphql.FieldConfigArgument{
+				"pagination": &graphql.ArgumentConfig{
+					Type: schemas.PaginationType,
+				},
+				"filter": &graphql.ArgumentConfig{
+					Type: schemas.FilterLawyerType,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				argument := p.Args
+				filterQuery, filterErr := utils.GenerateQuery(argument)
+				if filterErr != nil {
+					return nil, filterErr
+				}
+
+				//fields
+				takeFilter, filterOk := argument["filter"].(map[string]interface{})
+				var isApproved *bool
+
+				if filterOk {
+
+					takeisApproved, isApprovedOk := takeFilter["approved"].(bool)
+					if isApprovedOk {
+						isApproved = &takeisApproved
+					}
+
+				}
+
+				_Response, err := svcs.UserServices.ReadLawyers(p.Context, filterQuery, isApproved)
+				if err != nil {
+					return nil, err
+				}
+				var newResponse []interface{}
+				//loop to get the types
+				for _, dbRec := range _Response {
+					rec := transformations.DBUserToGQLLawyer(&dbRec)
+					newResponse = append(newResponse, rec)
+				}
+				return newResponse, nil
+			},
+		},
+		"lawyersLength": {
+			Type:        graphql.NewNonNull(graphql.Int),
+			Description: "Get Length of Lawyers in the system",
+			Args: graphql.FieldConfigArgument{
+				"filter": &graphql.ArgumentConfig{
+					Type: schemas.FilterLawyerType,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				argument := p.Args
+				filterQuery, filterErr := utils.GenerateQuery(argument)
+				if filterErr != nil {
+					return nil, filterErr
+				}
+
+				//fields
+				takeFilter, filterOk := argument["filter"].(map[string]interface{})
+				var isApproved *bool
+
+				if filterOk {
+					takeisApproved, isApprovedOk := takeFilter["approved"].(bool)
+					if isApprovedOk {
+						isApproved = &takeisApproved
+					}
+				}
+
+				_Response, err := svcs.UserServices.ReadLawyersLength(p.Context, filterQuery, isApproved)
 				if err != nil {
 					return nil, err
 				}
