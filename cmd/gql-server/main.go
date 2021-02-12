@@ -12,7 +12,9 @@ import (
 )
 
 func main() {
-	utils.Sentry()
+	if utils.MustGet("SENTRY_ENVIRONMENT") == "production" {
+		utils.Sentry()
+	}
 	//connects to redis
 	rdb := redis.Factory()
 
