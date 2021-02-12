@@ -79,6 +79,8 @@ type UserService interface {
 	) (*LoginResultUser, error)
 	ReadCustomers(ctx context.Context, filterQuery *utils.FilterQuery, customerType *string, isSuspended *bool) ([]models.Customer, error)
 	ReadCustomersLength(ctx context.Context, filterQuery *utils.FilterQuery, customerType *string, isSuspended *bool) (*int64, error)
+	ReadLawyers(ctx context.Context, filterQuery *utils.FilterQuery, isApproved *bool) ([]models.Lawyer, error)
+	ReadLawyersLength(ctx context.Context, filterQuery *utils.FilterQuery, isApproved *bool) (*int64, error)
 }
 
 //LoginResultUser is the typing for returning login successful data to user
@@ -161,8 +163,7 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
-	emailErr := orm.mg.SendTransactionalMail(ctx, subject, body, email)
-	log.Println(emailErr)
+	orm.mg.SendTransactionalMail(ctx, subject, body, email)
 
 	return &_User, nil
 }
@@ -248,8 +249,7 @@ func (orm *ORM) ResendUserCode(ctx context.Context, userID string) (*models.User
 	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
-	emailErr := orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
-	log.Println(emailErr)
+	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 
 	return &_User, nil
 }
@@ -326,9 +326,7 @@ func (orm *ORM) SendPhoneVerificationCode(ctx context.Context, phone string) (bo
 	// send code to phone
 	log.Println("Generated code for phone :: ", code)
 	body := fmt.Sprintf("Use this code %s to verify your phone number on our website", code)
-	resp, phoneErr := sms.Send(phone, body)
-	log.Println("resp", resp)
-	log.Println("error", phoneErr)
+	sms.Send(phone, body)
 
 	return true, nil
 }
@@ -404,7 +402,6 @@ func (orm *ORM) UpdateUserAndCustomer(
 	}
 
 	if phone != nil {
-		log.Println("2", &phone)
 		_User.Phone = phone
 		nowTime := time.Now()
 		_User.PhoneVerifiedAt = &nowTime
@@ -787,4 +784,87 @@ func (orm *ORM) ReadCustomersLength(ctx context.Context, filterQuery *utils.Filt
 		return nil, _Results.Error
 	}
 	return &_CustomersLength, nil
+}
+
+//ReadLawyers fetches lawyers
+func (orm *ORM) ReadLawyers(ctx context.Context, filterQuery *utils.FilterQuery, isApproved *bool) ([]models.Lawyer, error) {
+	var _Lawyers []models.Lawyer
+
+	_Results := orm.DB.DB
+
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("\"User\".created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if isApproved != nil {
+		approved := *isApproved
+		if approved {
+			_Results = _Results.Where("lawyers.approved_at IS NOT NULL")
+		} else {
+			_Results = _Results.Where("lawyers.approved_at IS NULL")
+		}
+	}
+
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("User").
+		Order(fmt.Sprintf("%s %s", filterQuery.OrderBy, filterQuery.Order)).
+		Limit(filterQuery.Limit).Offset(filterQuery.Skip).
+		Find(&_Lawyers)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return _Lawyers, nil
+}
+
+//ReadLawyersLength gets the length of lawyers table
+func (orm *ORM) ReadLawyersLength(ctx context.Context, filterQuery *utils.FilterQuery, isApproved *bool) (*int64, error) {
+	var _LawyersLength int64
+	_Results := orm.DB.DB.Model(&models.Lawyer{})
+
+	//add date range if added
+	if filterQuery.DateRange != nil {
+		_Results = _Results.Where("\"User\".created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
+	}
+
+	if isApproved != nil {
+		approved := *isApproved
+		if approved {
+			_Results = _Results.Where("lawyers.approved_at IS NOT NULL")
+		} else {
+			_Results = _Results.Where("lawyers.approved_at IS NULL")
+		}
+	}
+	if filterQuery.Search != nil {
+		for index, singleCriteria := range filterQuery.Search.SearchFields {
+			//if index is o, start to filter
+			if index == 0 {
+				_Results = _Results.Where(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+				continue
+			}
+			//more than one make it or so either ways it comes
+			_Results = _Results.Or(fmt.Sprintf("\"User\".%s LIKE ?", singleCriteria), fmt.Sprintf("%%%s%%", filterQuery.Search.Criteria))
+		}
+	}
+
+	//continue the filtration
+	_Results = _Results.Joins("User").Count(&_LawyersLength)
+
+	if _Results.Error != nil {
+		return nil, _Results.Error
+	}
+	return &_LawyersLength, nil
 }
