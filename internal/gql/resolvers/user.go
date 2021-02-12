@@ -60,7 +60,6 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 					rec := transformations.DBUserToGQLCustomer(&dbRec)
 					newResponse = append(newResponse, rec)
 				}
-				log.Print(newResponse)
 				return newResponse, nil
 			},
 		},
