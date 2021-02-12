@@ -50,6 +50,12 @@ var UserType = graphql.NewObject(
 			"phoneVerifiedAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
+			"suspendedAt": &graphql.Field{
+				Type: graphql.DateTime,
+			},
+			"suspendedBy": &graphql.Field{
+				Type: AdminType,
+			},
 			"createdAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
