@@ -67,6 +67,7 @@ func DBUserToGQLCustomer(i *models.Customer) interface{} {
 		"companyCountryOfRegistration": i.CompanyCountryOfRegistration,
 		"companyDateOfRegistration":    i.CompanyDateOfRegistration,
 		"companyRegistrationNumber":    i.CompanyRegistrationNumber,
+		"user":                         DBUserToGQLUser(&i.User),
 		"createdAt":                    i.CreatedAt,
 		"updatedAt":                    i.UpdatedAt,
 	}
