@@ -23,43 +23,45 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterCustomerType,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				argument := p.Args
-				filterQuery, filterErr := utils.GenerateQuery(argument)
-				if filterErr != nil {
-					return nil, filterErr
-				}
-
-				//fields
-				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var customerType *string
-				var isSuspended *bool
-
-				if filterOk {
-					takeCustomerType, customerTypeOk := takeFilter["type"].(string)
-					if customerTypeOk {
-						customerType = &takeCustomerType
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
 					}
 
-					takeIsSuspended, isSuspendedOk := takeFilter["suspended"].(bool)
-					if isSuspendedOk {
-						isSuspended = &takeIsSuspended
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var customerType *string
+					var isSuspended *bool
+
+					if filterOk {
+						takeCustomerType, customerTypeOk := takeFilter["type"].(string)
+						if customerTypeOk {
+							customerType = &takeCustomerType
+						}
+
+						takeIsSuspended, isSuspendedOk := takeFilter["suspended"].(bool)
+						if isSuspendedOk {
+							isSuspended = &takeIsSuspended
+						}
+
 					}
 
-				}
-
-				_Response, err := svcs.UserServices.ReadCustomers(p.Context, filterQuery, customerType, isSuspended)
-				if err != nil {
-					return nil, err
-				}
-				var newResponse []interface{}
-				//loop to get the types
-				for _, dbRec := range _Response {
-					rec := transformations.DBUserToGQLCustomer(&dbRec)
-					newResponse = append(newResponse, rec)
-				}
-				return newResponse, nil
-			},
+					_Response, err := svcs.UserServices.ReadCustomers(p.Context, filterQuery, customerType, isSuspended)
+					if err != nil {
+						return nil, err
+					}
+					var newResponse []interface{}
+					//loop to get the types
+					for _, dbRec := range _Response {
+						rec := transformations.DBUserToGQLCustomer(&dbRec)
+						newResponse = append(newResponse, rec)
+					}
+					return newResponse, nil
+				},
+			),
 		},
 		"customersLength": {
 			Type:        graphql.NewNonNull(graphql.Int),
@@ -69,37 +71,39 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterCustomerType,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				argument := p.Args
-				filterQuery, filterErr := utils.GenerateQuery(argument)
-				if filterErr != nil {
-					return nil, filterErr
-				}
-
-				//fields
-				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var customerType *string
-				var isSuspended *bool
-
-				if filterOk {
-					takeCustomerType, customerTypeOk := takeFilter["type"].(string)
-					if customerTypeOk {
-						customerType = &takeCustomerType
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
 					}
 
-					takeIsSuspended, isSuspendedOk := takeFilter["suspended"].(bool)
-					if isSuspendedOk {
-						isSuspended = &takeIsSuspended
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var customerType *string
+					var isSuspended *bool
+
+					if filterOk {
+						takeCustomerType, customerTypeOk := takeFilter["type"].(string)
+						if customerTypeOk {
+							customerType = &takeCustomerType
+						}
+
+						takeIsSuspended, isSuspendedOk := takeFilter["suspended"].(bool)
+						if isSuspendedOk {
+							isSuspended = &takeIsSuspended
+						}
+
 					}
 
-				}
-
-				_Response, err := svcs.UserServices.ReadCustomersLength(p.Context, filterQuery, customerType, isSuspended)
-				if err != nil {
-					return nil, err
-				}
-				return _Response, nil
-			},
+					_Response, err := svcs.UserServices.ReadCustomersLength(p.Context, filterQuery, customerType, isSuspended)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
 		},
 		"lawyers": {
 			Type:        graphql.NewNonNull(graphql.NewList(schemas.LawyerType)),
@@ -112,38 +116,40 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterLawyerType,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				argument := p.Args
-				filterQuery, filterErr := utils.GenerateQuery(argument)
-				if filterErr != nil {
-					return nil, filterErr
-				}
-
-				//fields
-				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var isApproved *bool
-
-				if filterOk {
-
-					takeisApproved, isApprovedOk := takeFilter["approved"].(bool)
-					if isApprovedOk {
-						isApproved = &takeisApproved
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
 					}
 
-				}
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var isApproved *bool
 
-				_Response, err := svcs.UserServices.ReadLawyers(p.Context, filterQuery, isApproved)
-				if err != nil {
-					return nil, err
-				}
-				var newResponse []interface{}
-				//loop to get the types
-				for _, dbRec := range _Response {
-					rec := transformations.DBUserToGQLLawyer(&dbRec)
-					newResponse = append(newResponse, rec)
-				}
-				return newResponse, nil
-			},
+					if filterOk {
+
+						takeisApproved, isApprovedOk := takeFilter["approved"].(bool)
+						if isApprovedOk {
+							isApproved = &takeisApproved
+						}
+
+					}
+
+					_Response, err := svcs.UserServices.ReadLawyers(p.Context, filterQuery, isApproved)
+					if err != nil {
+						return nil, err
+					}
+					var newResponse []interface{}
+					//loop to get the types
+					for _, dbRec := range _Response {
+						rec := transformations.DBUserToGQLLawyer(&dbRec)
+						newResponse = append(newResponse, rec)
+					}
+					return newResponse, nil
+				},
+			),
 		},
 		"lawyersLength": {
 			Type:        graphql.NewNonNull(graphql.Int),
@@ -153,30 +159,32 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterLawyerType,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				argument := p.Args
-				filterQuery, filterErr := utils.GenerateQuery(argument)
-				if filterErr != nil {
-					return nil, filterErr
-				}
-
-				//fields
-				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var isApproved *bool
-
-				if filterOk {
-					takeisApproved, isApprovedOk := takeFilter["approved"].(bool)
-					if isApprovedOk {
-						isApproved = &takeisApproved
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
 					}
-				}
 
-				_Response, err := svcs.UserServices.ReadLawyersLength(p.Context, filterQuery, isApproved)
-				if err != nil {
-					return nil, err
-				}
-				return _Response, nil
-			},
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var isApproved *bool
+
+					if filterOk {
+						takeisApproved, isApprovedOk := takeFilter["approved"].(bool)
+						if isApprovedOk {
+							isApproved = &takeisApproved
+						}
+					}
+
+					_Response, err := svcs.UserServices.ReadLawyersLength(p.Context, filterQuery, isApproved)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
 		},
 	}
 }
