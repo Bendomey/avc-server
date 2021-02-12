@@ -76,3 +76,27 @@ var LawyerType = graphql.NewObject(
 		},
 	},
 )
+
+//FilterLawyerType  for filtering customers
+var FilterLawyerType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "GetLawyersFilter",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"approved": &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+			"search": &graphql.InputObjectFieldConfig{
+				Type: SearchType,
+			},
+			"order": &graphql.InputObjectFieldConfig{
+				Type: enumTypeForOrder,
+			},
+			"orderBy": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"dateRange": &graphql.InputObjectFieldConfig{
+				Type: DateRangeType,
+			},
+		},
+	},
+)
