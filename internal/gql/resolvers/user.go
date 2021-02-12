@@ -1,6 +1,7 @@
 package resolvers
 
 import (
+	"log"
 	"time"
 
 	"github.com/Bendomey/avc-server/internal/gql/schemas"
@@ -11,7 +12,99 @@ import (
 )
 
 var userQuery = func(svcs services.Services) map[string]*graphql.Field {
-	return map[string]*graphql.Field{}
+	return map[string]*graphql.Field{
+		"customers": {
+			Type:        graphql.NewNonNull(graphql.NewList(schemas.CustomerType)),
+			Description: "Get Customers in the system",
+			Args: graphql.FieldConfigArgument{
+				"pagination": &graphql.ArgumentConfig{
+					Type: schemas.PaginationType,
+				},
+				"filter": &graphql.ArgumentConfig{
+					Type: schemas.FilterCustomerType,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				argument := p.Args
+				filterQuery, filterErr := utils.GenerateQuery(argument)
+				if filterErr != nil {
+					return nil, filterErr
+				}
+
+				//fields
+				takeFilter, filterOk := argument["filter"].(map[string]interface{})
+				var customerType *string
+				var isSuspended *bool
+
+				if filterOk {
+					takeCustomerType, customerTypeOk := takeFilter["type"].(string)
+					if customerTypeOk {
+						customerType = &takeCustomerType
+					}
+
+					takeIsSuspended, isSuspendedOk := takeFilter["suspended"].(bool)
+					if isSuspendedOk {
+						isSuspended = &takeIsSuspended
+					}
+
+				}
+
+				_Response, err := svcs.UserServices.ReadCustomers(p.Context, filterQuery, customerType, isSuspended)
+				if err != nil {
+					return nil, err
+				}
+				var newResponse []interface{}
+				//loop to get the types
+				for _, dbRec := range _Response {
+					log.Print(dbRec)
+					rec := transformations.DBUserToGQLCustomer(&dbRec)
+					newResponse = append(newResponse, rec)
+				}
+				log.Print(newResponse)
+				return newResponse, nil
+			},
+		},
+		"customersLength": {
+			Type:        graphql.NewNonNull(graphql.Int),
+			Description: "Get Length of Customers in the system",
+			Args: graphql.FieldConfigArgument{
+				"filter": &graphql.ArgumentConfig{
+					Type: schemas.FilterCustomerType,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				argument := p.Args
+				filterQuery, filterErr := utils.GenerateQuery(argument)
+				if filterErr != nil {
+					return nil, filterErr
+				}
+
+				//fields
+				takeFilter, filterOk := argument["filter"].(map[string]interface{})
+				var customerType *string
+				var isSuspended *bool
+
+				if filterOk {
+					takeCustomerType, customerTypeOk := takeFilter["type"].(string)
+					if customerTypeOk {
+						customerType = &takeCustomerType
+					}
+
+					takeIsSuspended, isSuspendedOk := takeFilter["suspended"].(bool)
+					if isSuspendedOk {
+						isSuspended = &takeIsSuspended
+					}
+
+				}
+
+				_Response, err := svcs.UserServices.ReadCustomersLength(p.Context, filterQuery, customerType, isSuspended)
+				if err != nil {
+					return nil, err
+				}
+				return _Response, nil
+			},
+		},
+	}
 }
 
 var userMutation = func(svcs services.Services) map[string]*graphql.Field {
