@@ -195,7 +195,7 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			),
 		},
-		"updateAdminDetails": {
+		"updateAdminDetailsSelf": {
 			Type:        graphql.NewNonNull(graphql.Boolean),
 			Description: "Update Admin Details",
 			Args: graphql.FieldConfigArgument{
@@ -233,6 +233,55 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 						role = nil
 					}
 					_Response, err := svcs.AdminServices.UpdateAdmin(p.Context, adminData.ID, fullname, email, role)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
+		"updateAdminDetails": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Update Admin Details",
+			Args: graphql.FieldConfigArgument{
+				"adminId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+				"fullname": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"email": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"role": &graphql.ArgumentConfig{
+					Type: schemas.EnumTypeAdminRole,
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					adminID := p.Args["adminId"].(string)
+					takeFullname, fullNameOk := p.Args["fullname"].(string)
+					takeEmail, emailOk := p.Args["email"].(string)
+					takeRole, roleOk := p.Args["email"].(string)
+					var fullname, email, role *string
+					if fullNameOk {
+						fullname = &takeFullname
+					} else {
+						fullname = nil
+					}
+
+					if emailOk {
+						email = &takeEmail
+					} else {
+						email = nil
+					}
+
+					if roleOk {
+						role = &takeRole
+					} else {
+						role = nil
+					}
+					_Response, err := svcs.AdminServices.UpdateAdmin(p.Context, adminID, fullname, email, role)
 					if err != nil {
 						return nil, err
 					}
