@@ -213,7 +213,7 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
 					takeFullname, fullNameOk := p.Args["fullname"].(string)
 					takeEmail, emailOk := p.Args["email"].(string)
-					takeRole, roleOk := p.Args["email"].(string)
+					takeRole, roleOk := p.Args["role"].(string)
 					var fullname, email, role *string
 					if fullNameOk {
 						fullname = &takeFullname
@@ -262,7 +262,7 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 					adminID := p.Args["adminId"].(string)
 					takeFullname, fullNameOk := p.Args["fullname"].(string)
 					takeEmail, emailOk := p.Args["email"].(string)
-					takeRole, roleOk := p.Args["email"].(string)
+					takeRole, roleOk := p.Args["role"].(string)
 					var fullname, email, role *string
 					if fullNameOk {
 						fullname = &takeFullname
