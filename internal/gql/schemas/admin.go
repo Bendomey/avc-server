@@ -38,6 +38,12 @@ var AdminType = graphql.NewObject(
 			"phoneVerifiedAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
+			"suspendedAt": &graphql.Field{
+				Type: graphql.DateTime,
+			},
+			"suspendedReason": &graphql.Field{
+				Type: graphql.String,
+			},
 			// "createdBy": &graphql.Field{
 			// 	Type: AdminType,
 			// },

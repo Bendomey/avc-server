@@ -14,6 +14,8 @@ func DBAdminToGQLAdmin(i *models.Admin) interface{} {
 		"phone":           i.Phone,
 		"role":            i.Role,
 		"phoneVerifiedAt": i.PhoneVerifiedAt,
+		"suspendedAt":     i.SuspendedAt,
+		"suspendedReason": i.SuspendedReason,
 		"createdAt":       i.CreatedAt,
 		"updatedAt":       i.UpdatedAt,
 	}
