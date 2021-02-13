@@ -232,7 +232,7 @@ func (orm *ORM) SuspendAdmin(ctx context.Context, user string, admin string, rea
 
 	//send mail plus reason
 	subject := "Welcome To African Venture Counsel - Account Suspension"
-	body := fmt.Sprintf("Your account has been suspended.\t Reason: %s", reason)
+	body := fmt.Sprintf("Your account has been suspended.\n Reason: %s", reason)
 	orm.mg.SendTransactionalMail(ctx, subject, body, _Admin.Email)
 	return true, nil
 }
