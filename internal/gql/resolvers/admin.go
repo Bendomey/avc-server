@@ -23,37 +23,39 @@ var adminQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterAdminType,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				argument := p.Args
-				filterQuery, filterErr := utils.GenerateQuery(argument)
-				if filterErr != nil {
-					return nil, filterErr
-				}
-
-				//fields
-				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var name *string
-
-				if filterOk {
-					takeName, nameOk := takeFilter["fullname"].(string)
-					if nameOk {
-						name = &takeName
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
 					}
 
-				}
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var name *string
 
-				_Response, err := svcs.AdminServices.ReadAdmins(p.Context, filterQuery, name)
-				if err != nil {
-					return nil, err
-				}
-				var newResponse []interface{}
-				//loop to get the types
-				for _, dbRec := range _Response {
-					rec := transformations.DBAdminToGQLAdmin(&dbRec)
-					newResponse = append(newResponse, rec)
-				}
-				return newResponse, nil
-			},
+					if filterOk {
+						takeName, nameOk := takeFilter["fullname"].(string)
+						if nameOk {
+							name = &takeName
+						}
+
+					}
+
+					_Response, err := svcs.AdminServices.ReadAdmins(p.Context, filterQuery, name)
+					if err != nil {
+						return nil, err
+					}
+					var newResponse []interface{}
+					//loop to get the types
+					for _, dbRec := range _Response {
+						rec := transformations.DBAdminToGQLAdmin(&dbRec)
+						newResponse = append(newResponse, rec)
+					}
+					return newResponse, nil
+				},
+			),
 		},
 		"adminsLength": {
 			Type:        graphql.NewNonNull(graphql.Int),
@@ -63,31 +65,33 @@ var adminQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: schemas.FilterAdminType,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				argument := p.Args
-				filterQuery, filterErr := utils.GenerateQuery(argument)
-				if filterErr != nil {
-					return nil, filterErr
-				}
-
-				//fields
-				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var name *string
-
-				if filterOk {
-					takeName, nameOk := takeFilter["fullname"].(string)
-					if nameOk {
-						name = &takeName
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					argument := p.Args
+					filterQuery, filterErr := utils.GenerateQuery(argument)
+					if filterErr != nil {
+						return nil, filterErr
 					}
 
-				}
+					//fields
+					takeFilter, filterOk := argument["filter"].(map[string]interface{})
+					var name *string
 
-				_Response, err := svcs.AdminServices.ReadAdminsLength(p.Context, filterQuery, name)
-				if err != nil {
-					return nil, err
-				}
-				return _Response, nil
-			},
+					if filterOk {
+						takeName, nameOk := takeFilter["fullname"].(string)
+						if nameOk {
+							name = &takeName
+						}
+
+					}
+
+					_Response, err := svcs.AdminServices.ReadAdminsLength(p.Context, filterQuery, name)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
 		},
 		"admin": {
 			Type:        graphql.NewNonNull(graphql.NewList(schemas.AdminType)),
@@ -97,15 +101,17 @@ var adminQuery = func(svcs services.Services) map[string]*graphql.Field {
 					Type: graphql.NewNonNull(graphql.ID),
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				adminID := p.Args["adminId"].(string)
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					adminID := p.Args["adminId"].(string)
 
-				_Response, err := svcs.AdminServices.ReadAdmin(p.Context, adminID)
-				if err != nil {
-					return nil, err
-				}
-				return transformations.DBAdminToGQLAdmin(_Response), nil
-			},
+					_Response, err := svcs.AdminServices.ReadAdmin(p.Context, adminID)
+					if err != nil {
+						return nil, err
+					}
+					return transformations.DBAdminToGQLAdmin(_Response), nil
+				},
+			),
 		},
 	}
 }
@@ -199,12 +205,16 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"email": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
+				"role": &graphql.ArgumentConfig{
+					Type: schemas.EnumTypeAdminRole,
+				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
 					takeFullname, fullNameOk := p.Args["fullname"].(string)
 					takeEmail, emailOk := p.Args["email"].(string)
-					var fullname, email *string
+					takeRole, roleOk := p.Args["email"].(string)
+					var fullname, email, role *string
 					if fullNameOk {
 						fullname = &takeFullname
 					} else {
@@ -216,7 +226,13 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 					} else {
 						email = nil
 					}
-					_Response, err := svcs.AdminServices.UpdateAdmin(p.Context, adminData.ID, fullname, email)
+
+					if roleOk {
+						role = &takeRole
+					} else {
+						role = nil
+					}
+					_Response, err := svcs.AdminServices.UpdateAdmin(p.Context, adminData.ID, fullname, email, role)
 					if err != nil {
 						return nil, err
 					}

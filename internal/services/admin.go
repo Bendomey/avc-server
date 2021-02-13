@@ -24,7 +24,7 @@ type AdminService interface {
 	CreateAdmin(ctx context.Context, name string, email string, role string, reatedBy *string) (*models.Admin, error)
 	LoginAdmin(ctx context.Context, email string, password string) (*LoginResultAdmin, error)
 	UpdateAdminPassword(ctx context.Context, adminID string, oldPassword string, newPassword string) (bool, error)
-	UpdateAdmin(ctx context.Context, adminID string, fullname *string, email *string) (bool, error)
+	UpdateAdmin(ctx context.Context, adminID string, fullname *string, email *string, role *string) (bool, error)
 	UpdateAdminPhone(ctx context.Context, adminID string, phone string) (bool, error)
 	DeleteAdmin(ctx context.Context, adminID string) (bool, error)
 	SuspendAdmin(ctx context.Context, user string, admin string, reason string) (bool, error)
@@ -141,7 +141,7 @@ func (orm *ORM) UpdateAdminPassword(ctx context.Context, adminID string, oldPass
 }
 
 // UpdateAdmin updates data of an admin
-func (orm *ORM) UpdateAdmin(ctx context.Context, adminID string, fullname *string, email *string) (bool, error) {
+func (orm *ORM) UpdateAdmin(ctx context.Context, adminID string, fullname *string, email *string, role *string) (bool, error) {
 	var _Admin models.Admin
 
 	err := orm.DB.DB.First(&_Admin, "id = ?", adminID).Error
@@ -158,6 +158,10 @@ func (orm *ORM) UpdateAdmin(ctx context.Context, adminID string, fullname *strin
 
 	if email != nil {
 		_Admin.Email = *email
+	}
+
+	if role != nil {
+		_Admin.Role = *role
 	}
 	orm.DB.DB.Save(&_Admin)
 
