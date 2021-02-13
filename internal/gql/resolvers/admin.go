@@ -259,6 +259,11 @@ var adminMutation = func(svcs services.Services) map[string]*graphql.Field {
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+
+					if adminData.Role != "Admin" {
+						return nil, errors.New("PermissionDenied")
+					}
+
 					adminID := p.Args["adminId"].(string)
 					takeFullname, fullNameOk := p.Args["fullname"].(string)
 					takeEmail, emailOk := p.Args["email"].(string)
