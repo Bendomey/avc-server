@@ -55,12 +55,6 @@ var LawyerType = graphql.NewObject(
 			"coverLetter": &graphql.Field{
 				Type: graphql.String,
 			},
-			"suspendedAt": &graphql.Field{
-				Type: graphql.DateTime,
-			},
-			"suspendedBy": &graphql.Field{
-				Type: AdminType,
-			},
 			"approvedAt": &graphql.Field{
 				Type: graphql.DateTime,
 			},
