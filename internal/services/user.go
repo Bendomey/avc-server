@@ -665,6 +665,9 @@ func (orm *ORM) SuspendUser(ctx context.Context, userID string, adminID string, 
 	}
 
 	//send mail plus reason
+	subject := "Welcome To African Venture Counsel - Account Suspension"
+	body := fmt.Sprintf("Your account has been suspended.\n Reason: %s", reason)
+	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 	return true, nil
 }
 
@@ -690,6 +693,10 @@ func (orm *ORM) RestoreUser(ctx context.Context, userID string) (bool, error) {
 	if updateError != nil {
 		return false, updateError
 	}
+
+	subject := "Welcome To African Venture Counsel - Account Restoration"
+	body := "Your account has been restored."
+	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 	return true, nil
 }
 

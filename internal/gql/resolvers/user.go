@@ -685,6 +685,26 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			),
 		},
+		"approveLawyer": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Approve Lawyer",
+			Args: graphql.FieldConfigArgument{
+				"lawyerId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					lawyerID := p.Args["lawyerId"].(string)
+
+					_Response, err := svcs.LawyerServices.ApproveLawyer(p.Context, lawyerID, adminData.ID)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
 	}
 }
 
