@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/Bendomey/avc-server/internal/mail"
@@ -34,11 +35,13 @@ func (orm *ORM) ApproveLawyer(ctx context.Context, lawyerID string, adminID stri
 		}
 		return false, err
 	}
+	log.Println(_Lawyer)
 	//update suspendedAt
 	updateError := orm.DB.DB.Model(&_Lawyer).Updates(map[string]interface{}{
-		"ApprovedAt":   time.Now(),
-		"ApprovedByID": adminID,
+		"approved_at":    time.Now(),
+		"approved_by_id": adminID,
 	}).Error
+	log.Println(updateError)
 	if updateError != nil {
 		return false, updateError
 	}

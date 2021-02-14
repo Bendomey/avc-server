@@ -42,6 +42,7 @@ func DBUserToGQLLawyer(i *models.Lawyer) interface{} {
 		"LawCertificate":          i.LawCertificate,
 		"CV":                      i.CV,
 		"coverLetter":             i.CoverLetter,
+		"approvedAt":              i.ApprovedAt,
 		"createdAt":               i.CreatedAt,
 		"updatedAt":               i.UpdatedAt,
 	}
