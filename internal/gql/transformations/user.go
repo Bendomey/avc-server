@@ -12,6 +12,7 @@ func DBUserToGQLUser(i *models.User) interface{} {
 		"otherNames":      i.OtherNames,
 		"email":           i.Email,
 		"phone":           i.Phone,
+		"suspendedAt":     i.SuspendedAt,
 		"emailVerifiedAt": i.EmailVerifiedAt,
 		"phoneVerifiedAt": i.PhoneVerifiedAt,
 		"setupAt":         i.SetupAt,
