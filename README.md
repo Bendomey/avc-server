@@ -62,9 +62,9 @@ Builds code into binary for production
 - [x] Restore
 - [x] Send Phone Verification Code
 - [x] Verify Phone Code
-- [ ] Read All
-- [ ] Read one
-- [ ] Count
+- [x] Read All
+- [x] Read one
+- [x] Count
 
 ## NewsLetter Subscribers
 
@@ -105,8 +105,8 @@ Builds code into binary for production
 
 ## Legal Areas
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read One
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Read All
+- [x] Read One
+- [x] Delete
