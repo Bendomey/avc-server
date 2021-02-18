@@ -424,6 +424,10 @@ func (orm *ORM) UpdateUserAndCustomer(
 		_Customer.Type = customerType
 	}
 
+	if tin != nil {
+		_Customer.TIN = tin
+	}
+
 	if digitalAddress != nil {
 		_Customer.DigitalAddress = digitalAddress
 	}

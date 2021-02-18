@@ -40,7 +40,7 @@ var CustomerType = graphql.NewObject(
 			"addressCity": &graphql.Field{
 				Type: graphql.String,
 			},
-			"addressStreetNumber": &graphql.Field{
+			"addressStreetName": &graphql.Field{
 				Type: graphql.String,
 			},
 			"addressNumber": &graphql.Field{

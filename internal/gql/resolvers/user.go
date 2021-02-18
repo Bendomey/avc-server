@@ -375,7 +375,7 @@ var userMutation = func(svcs services.Services) map[string]*graphql.Field {
 						} else {
 							email = nil
 						}
-						takeCustomerType, customerTypeOk := takeInput["customerType"].(string)
+						takeCustomerType, customerTypeOk := takeInput["type"].(string)
 						if customerTypeOk {
 							customerType = &takeCustomerType
 						} else {
