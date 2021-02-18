@@ -8,10 +8,11 @@ import (
 
 // Services responsible for exposing all services to resolvers
 type Services struct {
-	AdminServices   AdminService
-	CountryServices CountryService
-	UserServices    UserService
-	LawyerServices  LawyerService
+	AdminServices     AdminService
+	CountryServices   CountryService
+	UserServices      UserService
+	LawyerServices    LawyerService
+	LegalAreaServices LegalAreaService
 }
 
 //ORM gets orm connection
@@ -28,11 +29,13 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 	countryService := NewCountrySvc(orm, rdb, mg)
 	userService := NewUserSvc(orm, rdb, mg)
 	lawyerService := NewLawyerSvc(orm, rdb, mg)
+	legalAreaService := NewLegalAreaSvc(orm, rdb, mg)
 
 	return Services{
-		AdminServices:   adminService,
-		CountryServices: countryService,
-		UserServices:    userService,
-		LawyerServices:  lawyerService,
+		AdminServices:     adminService,
+		CountryServices:   countryService,
+		UserServices:      userService,
+		LawyerServices:    lawyerService,
+		LegalAreaServices: legalAreaService,
 	}
 }
