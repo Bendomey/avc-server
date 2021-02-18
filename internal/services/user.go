@@ -209,6 +209,12 @@ func (orm *ORM) LoginUser(ctx context.Context, email string, password string) (*
 	_ = orm.DB.DB.First(&_Lawyer, "user_id = ?", _User.ID).Error
 
 	if errors.Is(custErr, gorm.ErrRecordNotFound) {
+
+		//if lawyer and approved
+		if _Lawyer.ApprovedAt == nil {
+			return nil, errors.New("Your application is under review. We will notify you soon ")
+		}
+
 		return &LoginResultUser{
 			Token:    token,
 			User:     _User,
