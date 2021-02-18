@@ -436,9 +436,6 @@ func (orm *ORM) UpdateUserAndCustomer(
 		_Customer.AddressCountry = addressCountry
 	}
 	if addressCity != nil {
-		_Customer.AddressCountry = addressCity
-	}
-	if addressCity != nil {
 		_Customer.AddressCity = addressCity
 	}
 	if addressStreetName != nil {
