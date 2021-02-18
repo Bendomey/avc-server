@@ -6,6 +6,6 @@ type LegalArea struct {
 	Name        string `gorm:"not null;"`
 	Image       *string
 	Description *string
-	CreatedByID *string
-	CreatedBy   *Admin
+	CreatedByID string
+	CreatedBy   Admin
 }
