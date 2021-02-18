@@ -211,7 +211,7 @@ func (orm *ORM) LoginUser(ctx context.Context, email string, password string) (*
 	if errors.Is(custErr, gorm.ErrRecordNotFound) {
 
 		//if lawyer and approved
-		if _Lawyer.ApprovedAt == nil {
+		if _User.SetupAt != nil && _Lawyer.ApprovedAt == nil {
 			return nil, errors.New("Your application is under review. We will notify you soon ")
 		}
 
