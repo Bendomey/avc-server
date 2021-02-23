@@ -12,14 +12,14 @@ var tagsQuery = func(svcs services.Services) map[string]*graphql.Field {
 
 	return map[string]*graphql.Field{
 		"tags": {
-			Type:        graphql.NewNonNull(graphql.NewList(schemas.LegalAreaType)),
+			Type:        graphql.NewNonNull(graphql.NewList(schemas.TagType)),
 			Description: "Get tags list",
 			Args: graphql.FieldConfigArgument{
 				"pagination": &graphql.ArgumentConfig{
 					Type: schemas.PaginationType,
 				},
 				"filter": &graphql.ArgumentConfig{
-					Type: schemas.FilterLegalAreasType,
+					Type: schemas.FilterTagsType,
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -58,7 +58,7 @@ var tagsQuery = func(svcs services.Services) map[string]*graphql.Field {
 			Description: "Get tags Counts",
 			Args: graphql.FieldConfigArgument{
 				"filter": &graphql.ArgumentConfig{
-					Type: schemas.FilterLegalAreasType,
+					Type: schemas.FilterTagsType,
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -110,7 +110,7 @@ var tagsMutation = func(svcs services.Services) map[string]*graphql.Field {
 
 	return map[string]*graphql.Field{
 		"createTag": {
-			Type:        graphql.NewNonNull(schemas.LegalAreaType),
+			Type:        graphql.NewNonNull(schemas.TagType),
 			Description: "Create tag",
 			Args: graphql.FieldConfigArgument{
 				"name": &graphql.ArgumentConfig{
@@ -185,7 +185,7 @@ var tagsMutation = func(svcs services.Services) map[string]*graphql.Field {
 	}
 }
 
-// ExposeTagResolver exposes the legal ares resolver
+// ExposeTagResolver exposes the tags Reesolver
 func ExposeTagResolver(services services.Services) ResolverLoader {
 	return ResolverLoader{
 		Query:    tagsQuery(services),
