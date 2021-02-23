@@ -19,6 +19,8 @@ type TagService interface {
 	UpdateTag(context context.Context, tagID string, name *string) (bool, error)
 	DeleteTag(context context.Context, tagID string) (bool, error)
 	ReadTag(ctx context.Context, tagID string) (*models.Tag, error)
+	ReadTags(ctx context.Context, filterQuery *utils.FilterQuery, name *string) ([]*models.Tag, error)
+	ReadTagsLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string) (*int64, error)
 }
 
 // TagSvc exposed the ORM to the Tag functions in the module
