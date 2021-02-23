@@ -25,3 +25,27 @@ var TagType = graphql.NewObject(
 		},
 	},
 )
+
+//FilterTagsType  for filtering legal areas type
+var FilterTagsType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "GetTagsFilter",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"name": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"search": &graphql.InputObjectFieldConfig{
+				Type: SearchType,
+			},
+			"order": &graphql.InputObjectFieldConfig{
+				Type: enumTypeForOrder,
+			},
+			"orderBy": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"dateRange": &graphql.InputObjectFieldConfig{
+				Type: DateRangeType,
+			},
+		},
+	},
+)
