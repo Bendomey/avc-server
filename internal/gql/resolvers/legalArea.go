@@ -214,7 +214,7 @@ var legalAreaMutation = func(svcs services.Services) map[string]*graphql.Field {
 		},
 		"deleteLegalArea": {
 			Type:        graphql.NewNonNull(graphql.Boolean),
-			Description: "Update legal area",
+			Description: "Delete legal area",
 			Args: graphql.FieldConfigArgument{
 				"legalAreaId": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.ID),
