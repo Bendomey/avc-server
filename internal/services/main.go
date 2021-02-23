@@ -14,6 +14,7 @@ type Services struct {
 	LawyerServices     LawyerService
 	LegalAreaServices  LegalAreaService
 	NewsletterServices NewsletterService
+	TagServices        TagService
 }
 
 //ORM gets orm connection
@@ -32,6 +33,7 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 	lawyerService := NewLawyerSvc(orm, rdb, mg)
 	legalAreaService := NewLegalAreaSvc(orm, rdb, mg)
 	newsletterService := NewsletterSvc(orm, rdb, mg)
+	tagService := TagSvc(orm, rdb, mg)
 
 	return Services{
 		AdminServices:      adminService,
@@ -40,5 +42,6 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 		LawyerServices:     lawyerService,
 		LegalAreaServices:  legalAreaService,
 		NewsletterServices: newsletterService,
+		TagServices:        tagService,
 	}
 }
