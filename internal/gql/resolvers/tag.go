@@ -108,7 +108,81 @@ var tagsQuery = func(svcs services.Services) map[string]*graphql.Field {
 
 var tagsMutation = func(svcs services.Services) map[string]*graphql.Field {
 
-	return map[string]*graphql.Field{}
+	return map[string]*graphql.Field{
+		"createTag": {
+			Type:        graphql.NewNonNull(schemas.LegalAreaType),
+			Description: "Create tag",
+			Args: graphql.FieldConfigArgument{
+				"name": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					name := p.Args["name"].(string)
+
+					_Response, err := svcs.TagServices.CreateTag(p.Context, name, adminData.ID)
+					if err != nil {
+						return nil, err
+					}
+					return transformations.DBTagToGQLUser(_Response), nil
+				},
+			),
+		},
+		"updateTag": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Update tag",
+			Args: graphql.FieldConfigArgument{
+				"tagId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+				"name": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					tagID := p.Args["tagId"].(string)
+					takeName, nameOk := p.Args["name"].(string)
+
+					var name *string
+
+					//validations
+					if nameOk {
+						name = &takeName
+					} else {
+						name = nil
+					}
+
+					_Response, err := svcs.TagServices.UpdateTag(p.Context, tagID, name)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
+		"deleteTag": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Delete tag",
+			Args: graphql.FieldConfigArgument{
+				"tagId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					tagID := p.Args["tagId"].(string)
+
+					_Response, err := svcs.TagServices.DeleteTag(p.Context, tagID)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
+				},
+			),
+		},
+	}
 }
 
 // ExposeTagResolver exposes the legal ares resolver
