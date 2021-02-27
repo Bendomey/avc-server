@@ -2,14 +2,14 @@ package schemas
 
 import "github.com/graphql-go/graphql"
 
-var enumTypeTestBlogPostStatus = graphql.NewEnum(graphql.EnumConfig{
+var EnumTypeTestBlogPostStatus = graphql.NewEnum(graphql.EnumConfig{
 	Name: "BlogPostStatus",
 	Values: graphql.EnumValueConfigMap{
 		"Active": &graphql.EnumValueConfig{
-			Value: 0,
+			Value: "Active",
 		},
 		"Draft": &graphql.EnumValueConfig{
-			Value: 1,
+			Value: "Draft",
 		},
 	},
 })
@@ -29,7 +29,7 @@ var BlogPostType = graphql.NewObject(
 				Type: graphql.String,
 			},
 			"status": &graphql.Field{
-				Type: enumTypeTestBlogPostStatus,
+				Type: EnumTypeTestBlogPostStatus,
 			},
 			"tag": &graphql.Field{
 				Type: TagType,
@@ -45,6 +45,39 @@ var BlogPostType = graphql.NewObject(
 			},
 			"updatedAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
+			},
+		},
+	},
+)
+
+//FilterBlogPostsType  for filtering blog post type
+var FilterBlogPostsType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "GetTagsFilter",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"title": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"details": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"status": &graphql.InputObjectFieldConfig{
+				Type: EnumTypeTestBlogPostStatus,
+			},
+			"tag": &graphql.InputObjectFieldConfig{
+				Type: graphql.ID,
+			},
+			"search": &graphql.InputObjectFieldConfig{
+				Type: SearchType,
+			},
+			"order": &graphql.InputObjectFieldConfig{
+				Type: enumTypeForOrder,
+			},
+			"orderBy": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"dateRange": &graphql.InputObjectFieldConfig{
+				Type: DateRangeType,
 			},
 		},
 	},
