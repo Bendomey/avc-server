@@ -26,7 +26,7 @@ var TagType = graphql.NewObject(
 	},
 )
 
-//FilterTagsType  for filtering legal areas type
+//FilterTagsType  for filtering tag type
 var FilterTagsType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
 		Name: "GetTagsFilter",
