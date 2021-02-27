@@ -5,6 +5,6 @@ type Faq struct {
 	BaseModel
 	Question    string `gorm:"not null;"`
 	Answer      string `gorm:"not null;"`
-	CreatedByID *string
-	CreatedBy   *Admin
+	CreatedByID string
+	CreatedBy   Admin
 }
