@@ -137,7 +137,7 @@ func (orm *ORM) ReadTags(ctx context.Context, filterQuery *utils.FilterQuery, na
 func (orm *ORM) ReadTagsLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string) (*int64, error) {
 	var _TagsLength int64
 
-	_Results := orm.DB.DB.Model(&models.LegalArea{})
+	_Results := orm.DB.DB.Model(&models.Tag{})
 	//add date range if added
 	if filterQuery.DateRange != nil {
 		_Results = _Results.Where("tags.created_at BETWEEN ? AND ?", filterQuery.DateRange.StartTime, filterQuery.DateRange.EndTime)
