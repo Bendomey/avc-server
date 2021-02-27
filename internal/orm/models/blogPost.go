@@ -9,6 +9,6 @@ type BlogPost struct {
 	TagID       string
 	Tag         Tag
 	Details     string `gorm:"not null;"`
-	CreatedByID *string
-	CreatedBy   *Admin
+	CreatedByID string
+	CreatedBy   Admin
 }
