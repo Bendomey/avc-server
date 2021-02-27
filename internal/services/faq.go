@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// FAQService inteface holds the Tag-databse transactions of this controller
+// FAQService inteface holds the FAQ-databse transactions of this controller
 type FAQService interface {
 	CreateFAQ(context context.Context, question string, answer string, createdBy string) (*models.Faq, error)
 	UpdateFAQ(context context.Context, faqID string, question *string, answer *string) (bool, error)
@@ -23,7 +23,7 @@ type FAQService interface {
 	ReadFAQsLength(ctx context.Context, filterQuery *utils.FilterQuery, question *string, answer *string) (*int64, error)
 }
 
-// FAQSvc exposed the ORM to the Tag functions in the module
+// FAQSvc exposed the ORM to the FAQ functions in the module
 func FAQSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) FAQService {
 	return &ORM{db, rdb, mg}
 }
