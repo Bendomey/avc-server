@@ -156,7 +156,7 @@ func (orm *ORM) ReadPosts(ctx context.Context, filterQuery *utils.FilterQuery, s
 	}
 
 	//continue the filtration
-	_Results = _Results.Joins("CreatedBy").
+	_Results = _Results.Joins("CreatedBy").Joins("Tag").
 		Order(fmt.Sprintf("%s %s", filterQuery.OrderBy, filterQuery.Order)).
 		Limit(filterQuery.Limit).Offset(filterQuery.Skip).
 		Find(&_Posts)
@@ -206,7 +206,7 @@ func (orm *ORM) ReadPostsLength(ctx context.Context, filterQuery *utils.FilterQu
 	}
 
 	//continue the filtration
-	_Results = _Results.Joins("CreatedBy").
+	_Results = _Results.Joins("CreatedBy").Joins("Tag").
 		Count(&_PostsLength)
 
 	if _Results.Error != nil {
