@@ -68,40 +68,36 @@ Builds code into binary for production
 
 ## NewsLetter Subscribers
 
-- [ ] Create
+- [x] Create
 - [ ] Delete
 
 ## Newsletters
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read one
-- [ ] Delete
+- [] Create
 
 ## Tags
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read one
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Read All
+- [x] Read one
+- [x] Delete
 
 ## BlogPosts
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read one
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Read All
+- [x] Read one
+- [x] Delete
 
 ## Frequently Asked Questions
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read one
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Read All
+- [x] Read one
+- [x] Delete
 
 ## Legal Areas
 
