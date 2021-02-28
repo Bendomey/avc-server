@@ -63,7 +63,7 @@ var faqsQuery = func(svcs services.Services) map[string]*graphql.Field {
 			Description: "Get faqs Counts",
 			Args: graphql.FieldConfigArgument{
 				"filter": &graphql.ArgumentConfig{
-					Type: schemas.FilterTagsType,
+					Type: schemas.FilterFaqsType,
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
