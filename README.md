@@ -73,7 +73,7 @@ Builds code into binary for production
 
 ## Newsletters
 
-- [] Create
+- [ ] Create
 
 ## Tags
 
