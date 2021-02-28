@@ -53,7 +53,7 @@ var BlogPostType = graphql.NewObject(
 //FilterBlogPostsType  for filtering blog post type
 var FilterBlogPostsType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
-		Name: "GetTagsFilter",
+		Name: "GetBlogPostsFilter",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"title": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
