@@ -197,10 +197,10 @@ var blogPostsMutation = func(svcs services.Services) map[string]*graphql.Field {
 					Type: graphql.String,
 				},
 				"tag": &graphql.ArgumentConfig{
-					Type: graphql.String,
+					Type: graphql.ID,
 				},
 				"status": &graphql.ArgumentConfig{
-					Type: graphql.String,
+					Type: schemas.EnumTypeTestBlogPostStatus,
 				},
 				"image": &graphql.ArgumentConfig{
 					Type: graphql.String,
