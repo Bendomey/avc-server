@@ -2,6 +2,7 @@ package schemas
 
 import "github.com/graphql-go/graphql"
 
+// EnumTypeTestBlogPostStatus status type
 var EnumTypeTestBlogPostStatus = graphql.NewEnum(graphql.EnumConfig{
 	Name: "BlogPostStatus",
 	Values: graphql.EnumValueConfigMap{

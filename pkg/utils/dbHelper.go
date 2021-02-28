@@ -31,7 +31,7 @@ func GenerateQuery(argument map[string]interface{}) (*FilterQuery, error) {
 	filterResult := FilterQuery{
 		Limit:     -1,
 		Skip:      -1,
-		Order:     "asc",
+		Order:     "desc",
 		OrderBy:   "created_at",
 		Search:    nil,
 		DateRange: nil,
