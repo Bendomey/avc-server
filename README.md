@@ -28,12 +28,12 @@ Builds code into binary for production
 ## Admins
 
 - [x] Login
-- [x] Create .. I'm left with sending mail
+- [x] Create
 - [x] Update Password
 - [x] Update Details
-- [x] Update Phone ... I'm left with sending text message and having it verified before update can be done
+- [x] Update Phone
 - [x] Delete
-- [x] Suspend .. I'm left with sending mail
+- [x] Suspend
 - [x] Restore
 - [x] Read one
 - [x] Read all
@@ -73,7 +73,7 @@ Builds code into binary for production
 
 ## Newsletters
 
-- [ ] Create
+- [x] Create ... I'm left with sending the emails
 
 ## Tags
 
@@ -106,3 +106,50 @@ Builds code into binary for production
 - [x] Read All
 - [x] Read One
 - [x] Delete
+
+## Packages
+
+- [ ] Create
+- [ ] Update
+- [ ] Read All
+- [ ] Read One
+- [ ] Delete
+
+## Packages_Services
+
+- [ ] Assign services to a package
+- [ ] remove services from a package
+
+## Services
+
+- [ ] Create
+- [ ] Update
+- [ ] Read All
+- [ ] Read One
+- [ ] Delete
+
+## Servicing
+
+- [ ] Create
+- [ ] Update
+- [ ] Read All
+- [ ] Read One
+- [ ] Delete
+
+## Services fields
+
+- [ ] Create
+- [ ] Update
+
+## Subscription
+
+- [ ] Create
+- [ ] Update
+- [ ] Read All
+- [ ] Read One
+- [ ] Delete
+
+## Payment
+
+- [ ] Create
+- [ ] Update
