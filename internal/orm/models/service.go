@@ -12,7 +12,7 @@ const (
 type Service struct {
 	BaseModelSoftDelete
 	Name        string `gorm:"not null;"`
-	Price       *string
+	Price       *float64
 	Description *string
 	Type        ServiceType `gorm:"default:SUBSCRIBE"` // subscribe/unsubscribe/both
 	CreatedByID string
