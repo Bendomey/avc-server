@@ -24,6 +24,7 @@ func updateMigration(db *gorm.DB) error {
 		&models.LegalArea{},
 		&models.BlogPost{},
 		&models.NewsletterSubscribers{},
+		&models.Package{},
 	)
 	return err
 }
