@@ -18,6 +18,7 @@ type Services struct {
 	FaqServices        FAQService
 	BlogPostServices   BlogPostService
 	PackageServices    PackageService
+	ServiceServices    ServiceService
 }
 
 //ORM gets orm connection
@@ -40,6 +41,7 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 	faqService := FAQSvc(orm, rdb, mg)
 	postService := BlogPostSvc(orm, rdb, mg)
 	packageService := PackageSvc(orm, rdb, mg)
+	serviceService := ServiceSvc(orm, rdb, mg)
 
 	return Services{
 		AdminServices:      adminService,
@@ -52,5 +54,6 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 		FaqServices:        faqService,
 		BlogPostServices:   postService,
 		PackageServices:    packageService,
+		ServiceServices:    serviceService,
 	}
 }
