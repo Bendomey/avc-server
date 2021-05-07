@@ -138,7 +138,7 @@ func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery
 func (orm *ORM) ReadPackagesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string) (*int64, error) {
 	var __PackagesLength int64
 
-	_Results := orm.DB.DB
+	_Results := orm.DB.DB.Model(&models.Package{})
 
 	//add date range if added
 	if filterQuery.DateRange != nil {
