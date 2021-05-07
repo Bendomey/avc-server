@@ -15,8 +15,8 @@ import (
 
 // Service inteface holds the Service-databse transactions of this controller
 type ServiceService interface {
-	CreateService(context context.Context, name string, price *string, description *string, serviceType models.ServiceType, createdBy string) (*models.Service, error)
-	UpdateService(context context.Context, serviceID string, name *string, price *string, description *string, serviceType *models.ServiceType) (bool, error)
+	CreateService(context context.Context, name string, price *float64, description *string, serviceType models.ServiceType, createdBy string) (*models.Service, error)
+	UpdateService(context context.Context, serviceID string, name *string, price *float64, description *string, serviceType *string) (bool, error)
 	DeleteService(context context.Context, serviceeID string) (bool, error)
 	ReadService(ctx context.Context, serviceID string) (*models.Service, error)
 	ReadServices(ctx context.Context, filterQuery *utils.FilterQuery, name *string) ([]*models.Service, error)
@@ -28,7 +28,7 @@ func ServiceSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) ServiceS
 }
 
 // CreateService adds a new service to the system
-func (orm *ORM) CreateService(context context.Context, name string, price *string, description *string, serviceType models.ServiceType, createdBy string) (*models.Service, error) {
+func (orm *ORM) CreateService(context context.Context, name string, price *float64, description *string, serviceType models.ServiceType, createdBy string) (*models.Service, error) {
 	__Service := models.Service{
 		Name:        name,
 		CreatedByID: createdBy,
@@ -45,7 +45,7 @@ func (orm *ORM) CreateService(context context.Context, name string, price *strin
 }
 
 //UpdateService updates a service
-func (orm *ORM) UpdateService(context context.Context, serviceID string, name *string, price *string, description *string, serviceType *models.ServiceType) (bool, error) {
+func (orm *ORM) UpdateService(context context.Context, serviceID string, name *string, price *float64, description *string, serviceType *string) (bool, error) {
 	var __Service models.Service
 
 	err := orm.DB.DB.First(&__Service, "id = ?", serviceID).Error
@@ -66,7 +66,7 @@ func (orm *ORM) UpdateService(context context.Context, serviceID string, name *s
 	}
 
 	if serviceType != nil {
-		__Service.Type = *serviceType
+		__Service.Type = models.ServiceType(*serviceType)
 	}
 
 	orm.DB.DB.Save(__Service)
@@ -143,7 +143,7 @@ func (orm *ORM) ReadServices(ctx context.Context, filterQuery *utils.FilterQuery
 func (orm *ORM) ReadServicesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string) (*int64, error) {
 	var __ServicesLength int64
 
-	_Results := orm.DB.DB
+	_Results := orm.DB.DB.Model(&models.Service{})
 
 	//add date range if added
 	if filterQuery.DateRange != nil {
