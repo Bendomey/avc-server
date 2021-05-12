@@ -8,17 +8,18 @@ import (
 
 // Services responsible for exposing all services to resolvers
 type Services struct {
-	AdminServices      AdminService
-	CountryServices    CountryService
-	UserServices       UserService
-	LawyerServices     LawyerService
-	LegalAreaServices  LegalAreaService
-	NewsletterServices NewsletterService
-	TagServices        TagService
-	FaqServices        FAQService
-	BlogPostServices   BlogPostService
-	PackageServices    PackageService
-	ServiceServices    ServiceService
+	AdminServices          AdminService
+	CountryServices        CountryService
+	UserServices           UserService
+	LawyerServices         LawyerService
+	LegalAreaServices      LegalAreaService
+	NewsletterServices     NewsletterService
+	TagServices            TagService
+	FaqServices            FAQService
+	BlogPostServices       BlogPostService
+	PackageServices        PackageService
+	ServiceServices        ServiceService
+	PackageServiceServices PackageServiceService
 }
 
 //ORM gets orm connection
@@ -42,18 +43,20 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 	postService := BlogPostSvc(orm, rdb, mg)
 	packageService := PackageSvc(orm, rdb, mg)
 	serviceService := ServiceSvc(orm, rdb, mg)
+	packageServiceService := PackageServiceSvc(orm, rdb, mg)
 
 	return Services{
-		AdminServices:      adminService,
-		CountryServices:    countryService,
-		UserServices:       userService,
-		LawyerServices:     lawyerService,
-		LegalAreaServices:  legalAreaService,
-		NewsletterServices: newsletterService,
-		TagServices:        tagService,
-		FaqServices:        faqService,
-		BlogPostServices:   postService,
-		PackageServices:    packageService,
-		ServiceServices:    serviceService,
+		AdminServices:          adminService,
+		CountryServices:        countryService,
+		UserServices:           userService,
+		LawyerServices:         lawyerService,
+		LegalAreaServices:      legalAreaService,
+		NewsletterServices:     newsletterService,
+		TagServices:            tagService,
+		FaqServices:            faqService,
+		BlogPostServices:       postService,
+		PackageServices:        packageService,
+		ServiceServices:        serviceService,
+		PackageServiceServices: packageServiceService,
 	}
 }
