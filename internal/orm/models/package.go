@@ -4,8 +4,12 @@ package models
 type Package struct {
 	BaseModelSoftDelete
 	Name           string `gorm:"not null;"`
+	Description    *string
 	AmountPerMonth *int
 	AmountPerYear  *int
-	CreatedByID    string
+	Status         string // pending, approved
+	CreatedByID    *string
 	CreatedBy      Admin
+	RequestedByID  *string //when they are creating a custom package
+	RequestedBy    User
 }

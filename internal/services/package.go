@@ -13,10 +13,18 @@ import (
 	"gorm.io/gorm"
 )
 
+type CustomPackageService struct {
+	ServiceId string
+	Quantity  *int
+	IsActive  *bool
+}
+
 // PackageService inteface holds the Package-databse transactions of this controller
 type PackageService interface {
-	CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, amountPerYear *int) (*models.Package, error)
-	UpdatePackage(context context.Context, packageID string, name *string, amountPerMonth *int, amountPerYear *int) (bool, error)
+	CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int) (*models.Package, error)
+	CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService) (*models.Package, error)
+	ApprovePackage(context context.Context, packageID string, approvedBy string, amountPerMonth int, amountPerYear int) (bool, error)
+	UpdatePackage(context context.Context, packageID string, name *string, description *string, amountPerMonth *int, amountPerYear *int) (bool, error)
 	DeletePackage(context context.Context, packageID string) (bool, error)
 	ReadPackage(ctx context.Context, packageID string) (*models.Package, error)
 	ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery, name *string) ([]*models.Package, error)
@@ -28,22 +36,104 @@ func PackageSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) PackageS
 }
 
 // CreatePackage adds a new package to the system
-func (orm *ORM) CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, amountPerYear *int) (*models.Package, error) {
+func (orm *ORM) CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int) (*models.Package, error) {
 	__Package := models.Package{
 		Name:           name,
-		CreatedByID:    createdBy,
+		CreatedByID:    &createdBy,
 		AmountPerMonth: amountPerMonth,
 		AmountPerYear:  amountPerYear,
+		Description:    description,
+		Status:         "APPROVED",
 	}
 
-	if err := orm.DB.DB.Select("Name", "CreatedByID", "AmountPerMonth", "AmountPerYear").Create(&__Package).Error; err != nil {
+	if err := orm.DB.DB.Select("Name", "CreatedByID", "AmountPerMonth", "AmountPerYear", "Description", "Status").Create(&__Package).Error; err != nil {
 		return nil, err
 	}
 
 	return &__Package, nil
 }
 
-func (orm *ORM) UpdatePackage(context context.Context, packageID string, name *string, amountPerMonth *int, amountPerYear *int) (bool, error) {
+// CreateCustomPackage adds a new package to the system
+func (orm *ORM) CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService) (*models.Package, error) {
+
+	// fetch custom packages created by user and count it
+	var __PackagesLength int64 // hold length
+
+	__Results := orm.DB.DB.Model(&models.Package{}).Where("packages.requested_by_id = ?", createdBy).Count(&__PackagesLength)
+	if __Results.Error != nil {
+		return nil, __Results.Error
+	}
+
+	__Package := models.Package{
+		Name:          fmt.Sprintf("Custom Package %d", __PackagesLength+1),
+		RequestedByID: &createdBy,
+		Status:        "PENDING",
+	}
+
+	if err := orm.DB.DB.Select("Name", "RequestedByID", "Status").Create(&__Package).Error; err != nil {
+		return nil, err
+	}
+
+	//after creating package
+	//create individual package services
+	for _, packageService := range customPackages {
+		var typeOfPackageService models.PackageServiceType
+		if packageService.IsActive != nil {
+			typeOfPackageService = "BOOLEAN"
+		} else {
+			typeOfPackageService = "NUMBER"
+		}
+		__newPackageService := models.PackageService{
+			ServiceID:     packageService.ServiceId,
+			PackageID:     __Package.ID.String(),
+			Type:          typeOfPackageService,
+			Quantity:      packageService.Quantity,
+			IsActive:      packageService.IsActive,
+			RequestedByID: &createdBy,
+		}
+		if err := orm.DB.DB.Select("ServiceID", "PackageID", "Type", "Quantity", "IsActive", "RequestedByID").Create(&__newPackageService).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return &__Package, nil
+}
+
+//Approve custom package
+func (orm *ORM) ApprovePackage(context context.Context, packageID string, approvedBy string, amountPerMonth int, amountPerYear int) (bool, error) {
+	var __Package models.Package
+
+	err := orm.DB.DB.First(&__Package, "id = ?", packageID).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("PackageNotFound")
+	}
+
+	__Package.CreatedByID = &approvedBy
+	__Package.AmountPerMonth = &amountPerMonth
+	__Package.AmountPerYear = &amountPerYear
+	__Package.Status = "APPROVED"
+	orm.DB.DB.Save(__Package)
+
+	//find user
+	var __User models.User
+
+	userErr := orm.DB.DB.First(&__User, "id = ?", __Package.RequestedByID).Error
+	if errors.Is(userErr, gorm.ErrRecordNotFound) {
+		return false, errors.New("UsereNotFound")
+	}
+
+	subject := "Package Approved - African Venture Counsel"
+	name := "User"
+	if __User.LastName != nil {
+		name = *__User.LastName
+	}
+	body := fmt.Sprintf("Dear %s, your requested package has been approved. Visit our platform and then subscribe to this package", name)
+	go orm.mg.SendTransactionalMail(context, subject, body, __User.Email)
+
+	return true, nil
+}
+
+func (orm *ORM) UpdatePackage(context context.Context, packageID string, name *string, description *string, amountPerMonth *int, amountPerYear *int) (bool, error) {
 	var __Package models.Package
 
 	err := orm.DB.DB.First(&__Package, "id = ?", packageID).Error
@@ -53,6 +143,9 @@ func (orm *ORM) UpdatePackage(context context.Context, packageID string, name *s
 
 	if name != nil {
 		__Package.Name = *name
+	}
+	if description != nil {
+		__Package.Description = description
 	}
 
 	if amountPerMonth != nil {

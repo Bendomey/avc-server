@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"log"
 	"time"
 
 	"github.com/Bendomey/avc-server/internal/mail"
@@ -35,13 +34,13 @@ func (orm *ORM) ApproveLawyer(ctx context.Context, lawyerID string, adminID stri
 		}
 		return false, err
 	}
-	log.Println(_Lawyer)
+
 	//update suspendedAt
 	updateError := orm.DB.DB.Model(&_Lawyer).Updates(map[string]interface{}{
 		"approved_at":    time.Now(),
 		"approved_by_id": adminID,
 	}).Error
-	log.Println(updateError)
+
 	if updateError != nil {
 		return false, updateError
 	}
@@ -52,6 +51,6 @@ func (orm *ORM) ApproveLawyer(ctx context.Context, lawyerID string, adminID stri
 	//send mail
 	subject := "Welcome To African Venture Counsel - Account Approved"
 	body := "Congratulations, Your account has been approved. You can now receive jobs. Here's to your next chapter."
-	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
+	go orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 	return true, nil
 }

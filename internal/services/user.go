@@ -163,7 +163,7 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
-	orm.mg.SendTransactionalMail(ctx, subject, body, email)
+	go orm.mg.SendTransactionalMail(ctx, subject, body, email)
 
 	return &_User, nil
 }
@@ -255,7 +255,7 @@ func (orm *ORM) ResendUserCode(ctx context.Context, userID string) (*models.User
 	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
-	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
+	go orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 
 	return &_User, nil
 }
@@ -674,7 +674,7 @@ func (orm *ORM) SuspendUser(ctx context.Context, userID string, adminID string, 
 	//send mail plus reason
 	subject := "Welcome To African Venture Counsel - Account Suspension"
 	body := fmt.Sprintf("Your account has been suspended.\n Reason: %s", reason)
-	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
+	go orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 	return true, nil
 }
 
@@ -703,7 +703,7 @@ func (orm *ORM) RestoreUser(ctx context.Context, userID string) (bool, error) {
 
 	subject := "Welcome To African Venture Counsel - Account Restoration"
 	body := "Your account has been restored."
-	orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
+	go orm.mg.SendTransactionalMail(ctx, subject, body, _User.Email)
 	return true, nil
 }
 

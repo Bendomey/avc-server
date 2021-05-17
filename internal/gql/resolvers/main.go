@@ -27,6 +27,7 @@ func ExposeSchema(services services.Services) []*graphql.Object {
 		ExposePackageResolver(services).Query,
 		ExposeServiceResolver(services).Query,
 		ExposePackageServiceResolver(services).Query,
+		ExposeServicingResolver(services).Query,
 	}
 
 	var mutationsGathering = []map[string]*graphql.Field{
@@ -40,7 +41,7 @@ func ExposeSchema(services services.Services) []*graphql.Object {
 		ExposeBlogPostResolver(services).Mutation,
 		ExposePackageResolver(services).Mutation,
 		ExposeServiceResolver(services).Mutation,
-		ExposePackageServiceResolver(services).Mutation,
+		ExposeServicingResolver(services).Mutation,
 	}
 
 	// QueryType is the main querytype implementation

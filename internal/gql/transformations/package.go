@@ -12,7 +12,10 @@ func DBPackageToGQLUser(i *models.Package) interface{} {
 		"name":           i.Name,
 		"amountPerMonth": i.AmountPerMonth,
 		"amountPerYear":  i.AmountPerYear,
+		"description":    i.Description,
+		"status":         i.Status,
 		"createdBy":      DBAdminToGQLAdmin(&i.CreatedBy),
+		"requestedBy":    DBUserToGQLUser(&i.RequestedBy),
 		"createdAt":      i.CreatedAt,
 		"updatedAt":      i.UpdatedAt,
 	}

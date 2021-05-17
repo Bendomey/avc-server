@@ -109,24 +109,24 @@ Builds code into binary for production
 
 ## Packages
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read One
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Read All
+- [x] Read One
+- [x] Delete
 
 ## Packages_Services
 
-- [ ] Assign services to a package
-- [ ] remove services from a package
+- [x] Assign services to a package
+- [x] remove services from a package
 
 ## Services
 
-- [ ] Create
-- [ ] Update
-- [ ] Read All
-- [ ] Read One
-- [ ] Delete
+- [x] Create
+- [x] Update
+- [x] Read All
+- [x] Read One
+- [x] Delete
 
 ## Servicing
 

@@ -89,7 +89,7 @@ var packagesQuery = func(svcs services.Services) map[string]*graphql.Field {
 			Type:        schemas.PackageType,
 			Description: "Get single package",
 			Args: graphql.FieldConfigArgument{
-				"tagId": &graphql.ArgumentConfig{
+				"packageId": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.ID),
 				},
 			},
@@ -111,7 +111,7 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 	return map[string]*graphql.Field{
 		"createPackage": {
 			Type:        graphql.NewNonNull(schemas.PackageType),
-			Description: "Create tag",
+			Description: "Create package",
 			Args: graphql.FieldConfigArgument{
 				"name": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.String),
@@ -122,14 +122,19 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"amountPerYear": &graphql.ArgumentConfig{
 					Type: graphql.Int,
 				},
+				"description": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
 					name := p.Args["name"].(string)
 					takeAmountPerMonth, amountPerMonthOk := p.Args["amountPerMonth"].(int)
 					takeAmountPerYear, amountPerYearOk := p.Args["amountPerYear"].(int)
+					takeDescription, descriptionOk := p.Args["description"].(string)
 
 					var amountPerMonth, amountPerYear *int
+					var description *string
 
 					//validations
 					if amountPerMonthOk {
@@ -145,11 +150,86 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						amountPerYear = nil
 					}
 
-					_Response, err := svcs.PackageServices.CreatePackage(p.Context, name, adminData.ID, amountPerMonth, amountPerYear)
+					//validations
+					if descriptionOk {
+						description = &takeDescription
+					} else {
+						description = nil
+					}
+
+					_Response, err := svcs.PackageServices.CreatePackage(p.Context, name, adminData.ID, amountPerMonth, description, amountPerYear)
 					if err != nil {
 						return nil, err
 					}
 					return transformations.DBPackageToGQLUser(_Response), nil
+				},
+			),
+		},
+		"createCustomPackage": {
+			Type:        graphql.NewNonNull(schemas.PackageType),
+			Description: "Create Custom package",
+			Args: graphql.FieldConfigArgument{
+				"packageId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+				"packageServices": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.NewList(schemas.CustomPackageServices)),
+				},
+			},
+			Resolve: utils.AuthenticateUser(
+				func(p graphql.ResolveParams, userData *utils.UserFromToken) (interface{}, error) {
+					packageID := p.Args["packageId"].(string)
+					customPackages := p.Args["packageServices"].([]interface{})
+
+					var customPackageConvertList []services.CustomPackageService
+					for _, customPackage := range customPackages {
+						h := customPackage.(map[string]interface{})
+						customPackageConvert := services.CustomPackageService{
+							ServiceId: h["serviceId"].(string),
+						}
+						if h["quantity"] == nil {
+							b := h["isActive"].(bool)
+							customPackageConvert.IsActive = &b
+						} else {
+							q := h["quantity"].(int)
+							customPackageConvert.Quantity = &q
+						}
+						customPackageConvertList = append(customPackageConvertList, customPackageConvert)
+					}
+
+					_Response, err := svcs.PackageServices.CreateCustomPackage(p.Context, userData.ID, packageID, customPackageConvertList)
+					if err != nil {
+						return nil, err
+					}
+					return transformations.DBPackageToGQLUser(_Response), nil
+				},
+			),
+		},
+		"approveCustomPackage": {
+			Type:        graphql.NewNonNull(graphql.Boolean),
+			Description: "Approve Custom Package",
+			Args: graphql.FieldConfigArgument{
+				"packageId": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.ID),
+				},
+				"amountPerMonth": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.Int),
+				},
+				"amountPerYear": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.Int),
+				},
+			},
+			Resolve: utils.AuthenticateAdmin(
+				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
+					packageID := p.Args["packageId"].(string)
+					amountPerMonth := p.Args["amountPerMonth"].(int)
+					amountPerYear := p.Args["amountPerYear"].(int)
+
+					_Response, err := svcs.PackageServices.ApprovePackage(p.Context, packageID, adminData.ID, amountPerMonth, amountPerYear)
+					if err != nil {
+						return nil, err
+					}
+					return _Response, nil
 				},
 			),
 		},
@@ -169,6 +249,9 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"amountPerYear": &graphql.ArgumentConfig{
 					Type: graphql.Int,
 				},
+				"description": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
@@ -176,9 +259,10 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 					takeName, nameOk := p.Args["name"].(string)
 					takeAmountPerMonth, amountPerMonthOk := p.Args["amountPerMonth"].(int)
 					takeAmountPerYear, amountPerYearOk := p.Args["amountPerYear"].(int)
+					takeDescription, descriptionOk := p.Args["description"].(string)
 
 					var amountPerMonth, amountPerYear *int
-					var name *string
+					var name, description *string
 
 					//validations
 					if nameOk {
@@ -201,7 +285,14 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						amountPerYear = nil
 					}
 
-					_Response, err := svcs.PackageServices.UpdatePackage(p.Context, packageID, name, amountPerMonth, amountPerYear)
+					//validations
+					if descriptionOk {
+						description = &takeDescription
+					} else {
+						description = nil
+					}
+
+					_Response, err := svcs.PackageServices.UpdatePackage(p.Context, packageID, name, description, amountPerMonth, amountPerYear)
 					if err != nil {
 						return nil, err
 					}
