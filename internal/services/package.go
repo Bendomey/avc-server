@@ -22,7 +22,7 @@ type CustomPackageService struct {
 // PackageService inteface holds the Package-databse transactions of this controller
 type PackageService interface {
 	CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int) (*models.Package, error)
-	CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService) (*models.Package, error)
+	CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error)
 	ApprovePackage(context context.Context, packageID string, approvedBy string, amountPerMonth int, amountPerYear int) (bool, error)
 	UpdatePackage(context context.Context, packageID string, name *string, description *string, amountPerMonth *int, amountPerYear *int) (bool, error)
 	DeletePackage(context context.Context, packageID string) (bool, error)
@@ -54,20 +54,27 @@ func (orm *ORM) CreatePackage(context context.Context, name string, createdBy st
 }
 
 // CreateCustomPackage adds a new package to the system
-func (orm *ORM) CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService) (*models.Package, error) {
+func (orm *ORM) CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error) {
+	var nameForCustomPackage string
 
-	// fetch custom packages created by user and count it
-	var __PackagesLength int64 // hold length
+	if name != nil {
+		nameForCustomPackage = *name
+	} else {
+		// fetch custom packages created by user and count it
+		var __PackagesLength int64 // hold length
 
-	__Results := orm.DB.DB.Model(&models.Package{}).Where("packages.requested_by_id = ?", createdBy).Count(&__PackagesLength)
-	if __Results.Error != nil {
-		return nil, __Results.Error
+		__Results := orm.DB.DB.Model(&models.Package{}).Where("packages.requested_by_id = ?", createdBy).Count(&__PackagesLength)
+		if __Results.Error != nil {
+			return nil, __Results.Error
+		}
+		nameForCustomPackage = fmt.Sprintf("Custom Package %d", __PackagesLength+1)
 	}
 
 	__Package := models.Package{
-		Name:          fmt.Sprintf("Custom Package %d", __PackagesLength+1),
+		Name:          nameForCustomPackage,
 		RequestedByID: &createdBy,
 		Status:        "PENDING",
+		Description:   description,
 	}
 
 	if err := orm.DB.DB.Select("Name", "RequestedByID", "Status").Create(&__Package).Error; err != nil {
