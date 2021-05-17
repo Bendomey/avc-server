@@ -35,7 +35,7 @@ func (orm *ORM) CreatePackageService(context context.Context, serviceID string, 
 		Type:        packageServiceType,
 		Quantity:    quantity,
 		IsActive:    isActive,
-		CreatedByID: createdBy,
+		CreatedByID: &createdBy,
 	}
 
 	if err := orm.DB.DB.Select("ServiceID", "PackageID", "Type", "Quantity", "IsActive", "CreatedByID").Create(&__PackageService).Error; err != nil {
