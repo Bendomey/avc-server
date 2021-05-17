@@ -1,5 +1,7 @@
 package models
 
+import "github.com/gofrs/uuid"
+
 type PaymentStatus string
 
 const (
@@ -11,9 +13,9 @@ const (
 // Payment defines payments a user creates
 type Payment struct {
 	BaseModelSoftDelete
-	Code             string  `gorm:"not null;"`
-	Amount           float64 `gorm:"not null;"`
-	ServicingID      *string `gorm:"not null;"`
+	Code             uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Amount           float64   `gorm:"not null;"`
+	ServicingID      *string   `gorm:"not null;"`
 	Servicing        *Servicing
 	SubscriptionID   *string `gorm:"not null;"`
 	Subscription     *Subscription
