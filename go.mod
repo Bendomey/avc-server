@@ -21,6 +21,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/mailgun/mailgun-go v2.0.0+incompatible
 	github.com/mailgun/mailgun-go/v4 v4.3.3
+	github.com/mitchellh/mapstructure v1.4.1
 	github.com/sirupsen/logrus v1.7.0
 	github.com/vektah/gqlparser v1.3.1 // indirect
 	gorm.io/driver/postgres v1.0.8
