@@ -172,6 +172,12 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"packageId": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.ID),
 				},
+				"name": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"description": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
 				"packageServices": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.NewList(schemas.CustomPackageServices)),
 				},
@@ -180,6 +186,8 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				func(p graphql.ResolveParams, userData *utils.UserFromToken) (interface{}, error) {
 					packageID := p.Args["packageId"].(string)
 					customPackages := p.Args["packageServices"].([]interface{})
+					takeName, nameOk := p.Args["name"].(string)
+					takeDescription, descriptionOk := p.Args["description"].(string)
 
 					var customPackageConvertList []services.CustomPackageService
 					for _, customPackage := range customPackages {
@@ -196,8 +204,23 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						}
 						customPackageConvertList = append(customPackageConvertList, customPackageConvert)
 					}
+					var description, name *string
 
-					_Response, err := svcs.PackageServices.CreateCustomPackage(p.Context, userData.ID, packageID, customPackageConvertList)
+					//validations
+					if nameOk {
+						name = &takeName
+					} else {
+						name = nil
+					}
+
+					//validations
+					if descriptionOk {
+						description = &takeDescription
+					} else {
+						description = nil
+					}
+
+					_Response, err := svcs.PackageServices.CreateCustomPackage(p.Context, userData.ID, packageID, customPackageConvertList, name, description)
 					if err != nil {
 						return nil, err
 					}
