@@ -18,22 +18,15 @@ type Business struct {
 type Trademark struct {
 	CountryID                 *string
 	Country                   Country
-	Type                      *string
+	OwnershipType             *string
 	Owners                    *string
 	Address                   *string
 	ClassificationOfTrademark *string
 	Uploads                   *string
 }
 
-type DocumentType string
-
-const (
-	DocumentNew      DocumentType = "NEW"
-	DocumentExisting DocumentType = "EXISTING"
-)
-
 type Document struct {
-	Type              *DocumentType
+	Type              *string
 	NatureOfDoc       *string
 	Deadline          *time.Time
 	ExistingDocuments *string
@@ -41,6 +34,7 @@ type Document struct {
 }
 
 type ServicingField struct {
+	BaseModelSoftDelete
 	Business  Business  `gorm:"embedded; embeddedPrefix:business_"`
 	Trademark Trademark `gorm:"embedded; embeddedPrefix:trademark_"`
 	Document  Document  `gorm:"embedded; embeddedPrefix:document_"`
