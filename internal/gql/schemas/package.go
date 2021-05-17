@@ -19,14 +19,54 @@ var PackageType = graphql.NewObject(
 			"amountPerMonth": &graphql.Field{
 				Type: graphql.Int,
 			},
+			"description": &graphql.Field{
+				Type: graphql.String,
+			},
+			"status": &graphql.Field{
+				Type: EnumForPackageStatus,
+			},
 			"createdBy": &graphql.Field{
 				Type: AdminType,
+			},
+			"requestedBy": &graphql.Field{
+				Type: UserType,
 			},
 			"createdAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
 			},
 			"updatedAt": &graphql.Field{
 				Type: graphql.NewNonNull(graphql.DateTime),
+			},
+		},
+	},
+)
+
+//EnumPackageStatus  for types of servicing
+var EnumForPackageStatus = graphql.NewEnum(graphql.EnumConfig{
+	Name: "PackageStatus",
+	Values: graphql.EnumValueConfigMap{
+		"PENDING": &graphql.EnumValueConfig{
+			Value: "PENDING",
+		},
+		"APPROVED": &graphql.EnumValueConfig{
+			Value: "APPROVED",
+		},
+	},
+})
+
+//CustomPackageServices for adding custom Package services
+var CustomPackageServices = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "CustomPackageServices",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"serviceId": &graphql.InputObjectFieldConfig{
+				Type: graphql.ID,
+			},
+			"quantity": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"isActive": &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
 			},
 		},
 	},
