@@ -27,10 +27,10 @@ func updateMigration(db *gorm.DB) error {
 		&models.Package{},
 		&models.Service{},
 		&models.PackageService{},
+		&models.Payment{},
 		&models.Subscription{},
 		&models.Servicing{},
 		&models.ServicingField{},
-		&models.Payment{},
 	)
 	return err
 }
