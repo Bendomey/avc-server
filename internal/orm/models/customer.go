@@ -9,7 +9,7 @@ type Customer struct {
 	BaseModelSoftDelete
 	UserID   string `gorm:"not null;"`
 	User     User
-	LawyerID *string `gorm:"not null;"`
+	LawyerID *string
 	Lawyer   User
 	Type     *string // business, individual
 	TIN      *string
