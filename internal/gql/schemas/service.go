@@ -22,6 +22,9 @@ var ServiceType = graphql.NewObject(
 			"type": &graphql.Field{
 				Type: graphql.NewNonNull(EnumTypeForService),
 			},
+			"variant": &graphql.Field{
+				Type: graphql.NewNonNull(EnumVariantForService),
+			},
 			"createdBy": &graphql.Field{
 				Type: AdminType,
 			},
@@ -71,6 +74,19 @@ var EnumTypeForService = graphql.NewEnum(graphql.EnumConfig{
 		},
 		"UNSUBSCRIBE": &graphql.EnumValueConfig{
 			Value: "UNSUBSCRIBE",
+		},
+	},
+})
+
+//enumTypeForService for ordering
+var EnumVariantForService = graphql.NewEnum(graphql.EnumConfig{
+	Name: "ServiceType",
+	Values: graphql.EnumValueConfigMap{
+		"BOOLEAN": &graphql.EnumValueConfig{
+			Value: "BOOLEAN",
+		},
+		"NUMBER": &graphql.EnumValueConfig{
+			Value: "NUMBER",
 		},
 	},
 })

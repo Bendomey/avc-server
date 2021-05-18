@@ -126,11 +126,15 @@ var servicesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"type": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(schemas.EnumTypeForService),
 				},
+				"variant": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(schemas.EnumVariantForService),
+				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
 					name := p.Args["name"].(string)
 					serviceType := p.Args["type"].(string)
+					variant := p.Args["variant"].(string)
 					takePrice, priceOk := p.Args["price"].(float64)
 					takeDescription, descriptionrOk := p.Args["description"].(string)
 
@@ -150,7 +154,7 @@ var servicesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						description = nil
 					}
 
-					_Response, err := svcs.ServiceServices.CreateService(p.Context, name, price, description, models.ServiceType(serviceType), adminData.ID)
+					_Response, err := svcs.ServiceServices.CreateService(p.Context, name, price, description, models.ServiceType(serviceType), variant, adminData.ID)
 					if err != nil {
 						return nil, err
 					}
@@ -177,6 +181,9 @@ var servicesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"type": &graphql.ArgumentConfig{
 					Type: schemas.EnumTypeForService,
 				},
+				"variant": &graphql.ArgumentConfig{
+					Type: schemas.EnumVariantForService,
+				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
@@ -185,10 +192,10 @@ var servicesMutation = func(svcs services.Services) map[string]*graphql.Field {
 					takeName, nameOk := p.Args["name"].(string)
 					takePrice, priceOk := p.Args["price"].(float64)
 					takeDescription, descriptionrOk := p.Args["description"].(string)
+					takeVariant, variantOk := p.Args["variant"].(string)
 
-					var name, description *string
+					var name, description, variant, serviceType *string
 					var price *float64
-					var serviceType *string
 
 					//validations
 					if nameOk {
@@ -216,7 +223,13 @@ var servicesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						serviceType = nil
 					}
 
-					_Response, err := svcs.ServiceServices.UpdateService(p.Context, serviceID, name, price, description, serviceType)
+					if variantOk {
+						variant = &takeVariant
+					} else {
+						variant = nil
+					}
+
+					_Response, err := svcs.ServiceServices.UpdateService(p.Context, serviceID, name, price, description, serviceType, variant)
 					if err != nil {
 						return nil, err
 					}

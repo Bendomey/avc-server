@@ -15,6 +15,7 @@ type Service struct {
 	Price       *float64
 	Description *string
 	Type        ServiceType `gorm:"default:SUBSCRIBE"` // subscribe/unsubscribe/both
+	Variant     string      // BOOLEAN/NUMBER
 	CreatedByID string
 	CreatedBy   Admin
 }

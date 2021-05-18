@@ -15,6 +15,7 @@ func DBServiceToGQLUser(i *models.Service) interface{} {
 		"price":       i.Price,
 		"description": i.Description,
 		"type":        fmt.Sprintf("%s", i.Type),
+		"variant":     i.Variant,
 		"createdBy":   DBAdminToGQLAdmin(&i.CreatedBy),
 		"createdAt":   i.CreatedAt,
 		"updatedAt":   i.UpdatedAt,
