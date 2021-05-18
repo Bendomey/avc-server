@@ -101,7 +101,7 @@ var FilterPackagesType = graphql.NewInputObject(
 
 //EnumPackageType  for types of servicing
 var EnumForPackageType = graphql.NewEnum(graphql.EnumConfig{
-	Name: "PackageStatus",
+	Name: "PackageType",
 	Values: graphql.EnumValueConfigMap{
 		"MAIN": &graphql.EnumValueConfig{
 			Value: "MAIN",
