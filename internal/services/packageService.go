@@ -122,11 +122,11 @@ func (orm *ORM) ReadPackageServices(ctx context.Context, filterQuery *utils.Filt
 	}
 
 	if serviceID != nil {
-		_Results = _Results.Where("package_services.ServiceID = ?", serviceID)
+		_Results = _Results.Where("package_services.service_id = ?", serviceID)
 	}
 
 	if packageID != nil {
-		_Results = _Results.Where("package_services.PackageID = ?", packageID)
+		_Results = _Results.Where("package_services.package_id = ?", packageID)
 	}
 
 	if filterQuery.Search != nil {
@@ -164,11 +164,11 @@ func (orm *ORM) ReadPackageServicesLength(ctx context.Context, filterQuery *util
 	}
 
 	if serviceID != nil {
-		_Results = _Results.Where("package_services.ServiceID = ?", serviceID)
+		_Results = _Results.Where("package_services.service_id = ?", serviceID)
 	}
 
 	if packageID != nil {
-		_Results = _Results.Where("package_services.PackageID = ?", packageID)
+		_Results = _Results.Where("package_services.package_id = ?", packageID)
 	}
 
 	if filterQuery.Search != nil {
