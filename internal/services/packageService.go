@@ -156,7 +156,7 @@ func (orm *ORM) ReadPackageServices(ctx context.Context, filterQuery *utils.Filt
 func (orm *ORM) ReadPackageServicesLength(ctx context.Context, filterQuery *utils.FilterQuery, serviceID *string, packageID *string) (*int64, error) {
 	var __PackageServicesLength int64
 
-	_Results := orm.DB.DB.Model(&models.Service{})
+	_Results := orm.DB.DB.Model(&models.PackageService{})
 
 	//add date range if added
 	if filterQuery.DateRange != nil {
@@ -184,7 +184,7 @@ func (orm *ORM) ReadPackageServicesLength(ctx context.Context, filterQuery *util
 	}
 
 	//continue the filtration
-	_Results = _Results.Joins("CreatedBy").
+	_Results = _Results.
 		Order(fmt.Sprintf("%s %s", filterQuery.OrderBy, filterQuery.Order)).
 		Limit(filterQuery.Limit).Offset(filterQuery.Skip).
 		Count(&__PackageServicesLength)
