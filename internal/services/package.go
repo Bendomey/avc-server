@@ -21,7 +21,7 @@ type CustomPackageService struct {
 
 // PackageService inteface holds the Package-databse transactions of this controller
 type PackageService interface {
-	CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int) (*models.Package, error)
+	CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int, customPackages []CustomPackageService) (*models.Package, error)
 	CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error)
 	ApprovePackage(context context.Context, packageID string, approvedBy string, amountPerMonth int, amountPerYear int) (bool, error)
 	UpdatePackage(context context.Context, packageID string, name *string, description *string, amountPerMonth *int, amountPerYear *int) (bool, error)
@@ -36,7 +36,7 @@ func PackageSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) PackageS
 }
 
 // CreatePackage adds a new package to the system
-func (orm *ORM) CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int) (*models.Package, error) {
+func (orm *ORM) CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int, customPackages []CustomPackageService) (*models.Package, error) {
 	__Package := models.Package{
 		Name:           name,
 		CreatedByID:    &createdBy,
@@ -48,6 +48,26 @@ func (orm *ORM) CreatePackage(context context.Context, name string, createdBy st
 
 	if err := orm.DB.DB.Select("Name", "CreatedByID", "AmountPerMonth", "AmountPerYear", "Description", "Status").Create(&__Package).Error; err != nil {
 		return nil, err
+	}
+
+	//create individual package services
+	for _, packageService := range customPackages {
+		var typeOfPackageService models.PackageServiceType
+		if packageService.IsActive != nil {
+			typeOfPackageService = "BOOLEAN"
+		} else {
+			typeOfPackageService = "NUMBER"
+		}
+		__newPackageService := models.PackageService{
+			ServiceID: packageService.ServiceId,
+			PackageID: __Package.ID.String(),
+			Type:      typeOfPackageService,
+			Quantity:  packageService.Quantity,
+			IsActive:  packageService.IsActive,
+		}
+		if err := orm.DB.DB.Select("ServiceID", "PackageID", "Type", "Quantity", "IsActive").Create(&__newPackageService).Error; err != nil {
+			return nil, err
+		}
 	}
 
 	return &__Package, nil

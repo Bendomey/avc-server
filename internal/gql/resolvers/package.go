@@ -102,9 +102,9 @@ var packagesQuery = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				tagID := p.Args["packageId"].(string)
+				packageID := p.Args["packageId"].(string)
 
-				_Response, err := svcs.PackageServices.ReadPackage(p.Context, tagID)
+				_Response, err := svcs.PackageServices.ReadPackage(p.Context, packageID)
 				if err != nil {
 					return nil, err
 				}
@@ -133,13 +133,33 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 				"description": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
+				"packageServices": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.NewList(schemas.CustomPackageServices)),
+				},
 			},
 			Resolve: utils.AuthenticateAdmin(
 				func(p graphql.ResolveParams, adminData *utils.AdminFromToken) (interface{}, error) {
 					name := p.Args["name"].(string)
+					customPackages := p.Args["packageServices"].([]interface{})
 					takeAmountPerMonth, amountPerMonthOk := p.Args["amountPerMonth"].(int)
 					takeAmountPerYear, amountPerYearOk := p.Args["amountPerYear"].(int)
 					takeDescription, descriptionOk := p.Args["description"].(string)
+
+					var customPackageConvertList []services.CustomPackageService
+					for _, customPackage := range customPackages {
+						h := customPackage.(map[string]interface{})
+						customPackageConvert := services.CustomPackageService{
+							ServiceId: h["serviceId"].(string),
+						}
+						if h["quantity"] == nil {
+							b := h["isActive"].(bool)
+							customPackageConvert.IsActive = &b
+						} else {
+							q := h["quantity"].(int)
+							customPackageConvert.Quantity = &q
+						}
+						customPackageConvertList = append(customPackageConvertList, customPackageConvert)
+					}
 
 					var amountPerMonth, amountPerYear *int
 					var description *string
@@ -165,7 +185,7 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						description = nil
 					}
 
-					_Response, err := svcs.PackageServices.CreatePackage(p.Context, name, adminData.ID, amountPerMonth, description, amountPerYear)
+					_Response, err := svcs.PackageServices.CreatePackage(p.Context, name, adminData.ID, amountPerMonth, description, amountPerYear, customPackageConvertList)
 					if err != nil {
 						return nil, err
 					}
