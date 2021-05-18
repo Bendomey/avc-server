@@ -77,6 +77,9 @@ var FilterPackagesType = graphql.NewInputObject(
 	graphql.InputObjectConfig{
 		Name: "GetPackagesFilter",
 		Fields: graphql.InputObjectConfigFieldMap{
+			"type": &graphql.InputObjectFieldConfig{
+				Type: EnumForPackageType,
+			},
 			"name": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},
@@ -95,3 +98,16 @@ var FilterPackagesType = graphql.NewInputObject(
 		},
 	},
 )
+
+//EnumPackageType  for types of servicing
+var EnumForPackageType = graphql.NewEnum(graphql.EnumConfig{
+	Name: "PackageStatus",
+	Values: graphql.EnumValueConfigMap{
+		"MAIN": &graphql.EnumValueConfig{
+			Value: "MAIN",
+		},
+		"REQUESTED": &graphql.EnumValueConfig{
+			Value: "REQUESTED",
+		},
+	},
+})
