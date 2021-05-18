@@ -80,7 +80,7 @@ var EnumTypeForService = graphql.NewEnum(graphql.EnumConfig{
 
 //enumTypeForService for ordering
 var EnumVariantForService = graphql.NewEnum(graphql.EnumConfig{
-	Name: "ServiceType",
+	Name: "ServiceVariant",
 	Values: graphql.EnumValueConfigMap{
 		"BOOLEAN": &graphql.EnumValueConfig{
 			Value: "BOOLEAN",
