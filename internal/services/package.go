@@ -233,10 +233,11 @@ func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery
 
 	if packagesType != nil {
 		mainPackages := "MAIN"
-		if packagesType == &mainPackages {
-			_Results = _Results.Where("packages.RequestedByID = ?", nil)
+		if *packagesType == mainPackages {
+			_Results = _Results.Where("packages.requested_by_id IS NULL")
 		} else {
-			_Results = _Results.Where("packages.CreatedByID = ? AND packages.Status = ?", nil, "PENDING")
+			fmt.Print("wprld")
+			_Results = _Results.Where("packages.created_by_id IS NULL AND packages.status = ?", "PENDING")
 		}
 	}
 
@@ -253,7 +254,7 @@ func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery
 	}
 
 	//continue the filtration
-	_Results = _Results.Joins("CreatedBy").
+	_Results = _Results.Joins("CreatedBy").Joins("RequestedBy").
 		Order(fmt.Sprintf("%s %s", filterQuery.OrderBy, filterQuery.Order)).
 		Limit(filterQuery.Limit).Offset(filterQuery.Skip).
 		Find(&__Packages)
@@ -281,9 +282,9 @@ func (orm *ORM) ReadPackagesLength(ctx context.Context, filterQuery *utils.Filte
 	if packagesType != nil {
 		mainPackages := "MAIN"
 		if packagesType == &mainPackages {
-			_Results = _Results.Where("packages.RequestedByID = ?", nil)
+			_Results = _Results.Where("packages.requested_by_id IS NULL")
 		} else {
-			_Results = _Results.Where("packages.CreatedByID = ? AND packages.Status = ?", nil, "PENDING")
+			_Results = _Results.Where("packages.created_by_id IS NULL AND packages.status = ?", "PENDING")
 		}
 	}
 
