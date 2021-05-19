@@ -186,6 +186,26 @@ var userQuery = func(svcs services.Services) map[string]*graphql.Field {
 				},
 			),
 		},
+		"getMe": {
+			Type:        graphql.NewNonNull(schemas.GetMeType),
+			Description: "Get Me from in the system",
+			Resolve: utils.AuthenticateUser(
+				func(p graphql.ResolveParams, userData *utils.UserFromToken) (interface{}, error) {
+
+					_Response, err := svcs.UserServices.GetMe(p.Context, userData.ID)
+
+					if err != nil {
+						return nil, err
+					}
+
+					return map[string]interface{}{
+						"user":     transformations.DBUserToGQLUser(&_Response.User),
+						"lawyer":   transformations.DBUserToGQLLawyer(_Response.Lawyer),
+						"customer": transformations.DBUserToGQLCustomer(_Response.Customer),
+					}, nil
+				},
+			),
+		},
 	}
 }
 

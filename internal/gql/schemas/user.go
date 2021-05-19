@@ -87,6 +87,24 @@ var LoginUserType = graphql.NewObject(
 	},
 )
 
+//GetMeType defines the response on successfull get me query
+var GetMeType = graphql.NewObject(
+	graphql.ObjectConfig{
+		Name: "GetMeResult",
+		Fields: graphql.Fields{
+			"user": &graphql.Field{
+				Type: graphql.NewNonNull(UserType),
+			},
+			"lawyer": &graphql.Field{
+				Type: LawyerType,
+			},
+			"customer": &graphql.Field{
+				Type: CustomerType,
+			},
+		},
+	},
+)
+
 //UpdateCustomerInput defines input for updating
 var UpdateCustomerInput = graphql.NewInputObject(
 	graphql.InputObjectConfig{

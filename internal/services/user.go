@@ -25,6 +25,7 @@ import (
 type UserService interface {
 	CreateUser(ctx context.Context, userType string, email string, password string) (*models.User, error)
 	LoginUser(ctx context.Context, email string, password string) (*LoginResultUser, error)
+	GetMe(ctx context.Context, userID string) (*GetMeType, error)
 	ResendUserCode(ctx context.Context, userID string) (*models.User, error)
 	VerifyUserEmail(ctx context.Context, userID string, code string) (*LoginResultUser, error)
 	DeleteUser(ctx context.Context, userID string) (bool, error)
@@ -86,6 +87,12 @@ type UserService interface {
 //LoginResultUser is the typing for returning login successful data to user
 type LoginResultUser struct {
 	Token    string           `json:"token"`
+	User     models.User      `json:"user"`
+	Lawyer   *models.Lawyer   `json:"lawyer"`
+	Customer *models.Customer `json:"customer"`
+}
+
+type GetMeType struct {
 	User     models.User      `json:"user"`
 	Lawyer   *models.Lawyer   `json:"lawyer"`
 	Customer *models.Customer `json:"customer"`
@@ -230,6 +237,45 @@ func (orm *ORM) LoginUser(ctx context.Context, email string, password string) (*
 		Customer: &_Customer,
 	}, nil
 
+}
+
+//GetMe helps to get all details needed for a single user
+func (orm *ORM) GetMe(ctx context.Context, userID string) (*GetMeType, error) {
+	var _User models.User
+
+	//check if email is in db
+	err := orm.DB.DB.First(&_User, "id = ?", userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("UserNotFound")
+		}
+		return nil, err
+	}
+
+	//check if the person is suspended or not
+	if _User.SuspendedAt != nil {
+		return nil, errors.New("AccountSuspended")
+	}
+
+	var _Customer models.Customer
+	var _Lawyer models.Lawyer
+
+	custErr := orm.DB.DB.First(&_Customer, "user_id = ?", _User.ID).Error
+	_ = orm.DB.DB.First(&_Lawyer, "user_id = ?", _User.ID).Error
+
+	if errors.Is(custErr, gorm.ErrRecordNotFound) {
+		return &GetMeType{
+			User:     _User,
+			Lawyer:   &_Lawyer,
+			Customer: nil,
+		}, nil
+	}
+
+	return &GetMeType{
+		User:     _User,
+		Lawyer:   nil,
+		Customer: &_Customer,
+	}, nil
 }
 
 //ResendUserCode helps to resend a new code
