@@ -3,16 +3,16 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
+	"github.com/Bendomey/avc-server/internal/gql/transformations"
 	"github.com/Bendomey/avc-server/internal/services"
 )
 
 type GetMeResponse struct {
-	success      bool
-	data         *interface{}
-	errorMessage *string
+	Success      bool                    `json:"success"`
+	Data         *map[string]interface{} `json:"data"`
+	ErrorMessage *string                 `json:"errorMessage"`
 }
 
 var errorResponseIfTokenNotFound string
@@ -26,20 +26,37 @@ func init() {
 func GetMe(services services.Services) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		setupResponse(&w, r)
-		fmt.Print(r.Header.Get("token"))
-		userId := r.Header.Get("token")
+		userId := r.Header.Get("Authorization")
 
 		if userId == "" {
 			//if header is not passed
 			json.NewEncoder(w).Encode(GetMeResponse{
-				success:      false,
-				errorMessage: &errorResponseIfTokenNotFound,
+				Success:      false,
+				ErrorMessage: &errorResponseIfTokenNotFound,
 			})
 		} else {
 
 			// if header is passed
-			res, _ := services.UserServices.GetMe(context.TODO(), userId)
-			json.NewEncoder(w).Encode(res)
+			_Response, err := services.UserServices.GetMe(context.TODO(), userId)
+			if err != nil {
+				errorMessage := err.Error()
+				json.NewEncoder(w).Encode(GetMeResponse{
+					Success:      false,
+					ErrorMessage: &errorMessage,
+				})
+
+			} else {
+				sendThis := map[string]interface{}{
+					"user":     transformations.DBUserToGQLUser(&_Response.User),
+					"lawyer":   transformations.DBUserToGQLLawyer(_Response.Lawyer),
+					"customer": transformations.DBUserToGQLCustomer(_Response.Customer),
+				}
+				json.NewEncoder(w).Encode(GetMeResponse{
+					Success: true,
+					Data:    &sendThis,
+				})
+			}
+
 		}
 
 	}
