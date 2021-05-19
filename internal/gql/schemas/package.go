@@ -80,6 +80,9 @@ var FilterPackagesType = graphql.NewInputObject(
 			"type": &graphql.InputObjectFieldConfig{
 				Type: EnumForPackageType,
 			},
+			"user": &graphql.InputObjectFieldConfig{
+				Type: graphql.ID,
+			},
 			"name": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},

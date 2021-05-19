@@ -31,20 +31,24 @@ var packagesQuery = func(svcs services.Services) map[string]*graphql.Field {
 
 				//fields
 				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var name, packagesType *string
+				var name, packagesType, user *string
 
 				if filterOk {
 					takeName, nameOk := takeFilter["name"].(string)
 					takeType, typeOk := takeFilter["type"].(string)
+					takeUser, userOk := takeFilter["user"].(string)
 					if nameOk {
 						name = &takeName
 					}
 					if typeOk {
 						packagesType = &takeType
 					}
+					if userOk {
+						user = &takeUser
+					}
 				}
 
-				_Response, err := svcs.PackageServices.ReadPackages(p.Context, filterQuery, name, packagesType)
+				_Response, err := svcs.PackageServices.ReadPackages(p.Context, filterQuery, name, packagesType, user)
 				if err != nil {
 					return nil, err
 				}
@@ -73,20 +77,24 @@ var packagesQuery = func(svcs services.Services) map[string]*graphql.Field {
 				}
 				//fields
 				takeFilter, filterOk := argument["filter"].(map[string]interface{})
-				var name, packagesType *string
+				var name, packagesType, user *string
 
 				if filterOk {
 					takeName, nameOk := takeFilter["name"].(string)
 					takeType, typeOk := takeFilter["type"].(string)
+					takeUser, userOk := takeFilter["user"].(string)
 					if nameOk {
 						name = &takeName
 					}
 					if typeOk {
 						packagesType = &takeType
 					}
+					if userOk {
+						user = &takeUser
+					}
 				}
 
-				_Response, err := svcs.PackageServices.ReadPackagesLength(p.Context, filterQuery, name, packagesType)
+				_Response, err := svcs.PackageServices.ReadPackagesLength(p.Context, filterQuery, name, packagesType, user)
 				if err != nil {
 					return nil, err
 				}

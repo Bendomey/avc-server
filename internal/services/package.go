@@ -27,8 +27,8 @@ type PackageService interface {
 	UpdatePackage(context context.Context, packageID string, name *string, description *string, amountPerMonth *int, amountPerYear *int) (bool, error)
 	DeletePackage(context context.Context, packageID string) (bool, error)
 	ReadPackage(ctx context.Context, packageID string) (*models.Package, error)
-	ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string) ([]*models.Package, error)
-	ReadPackagesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string) (*int64, error)
+	ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string, userID *string) ([]*models.Package, error)
+	ReadPackagesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string, userID *string) (*int64, error)
 }
 
 func PackageSvc(db *orm.ORM, rdb *redis.Client, mg mail.MailingService) PackageService {
@@ -217,7 +217,7 @@ func (orm *ORM) ReadPackage(ctx context.Context, packageID string) (*models.Pack
 	return &__Package, nil
 }
 
-func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string) ([]*models.Package, error) {
+func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string, userID *string) ([]*models.Package, error) {
 	var __Packages []*models.Package
 
 	_Results := orm.DB.DB
@@ -229,6 +229,10 @@ func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery
 
 	if name != nil {
 		_Results = _Results.Where("packages.Name = ?", name)
+	}
+
+	if userID != nil {
+		_Results = _Results.Where("packages.requested_by_id = ? OR packages.requested_by_id IS NULL", userID)
 	}
 
 	if packagesType != nil {
@@ -265,7 +269,7 @@ func (orm *ORM) ReadPackages(ctx context.Context, filterQuery *utils.FilterQuery
 	return __Packages, nil
 }
 
-func (orm *ORM) ReadPackagesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string) (*int64, error) {
+func (orm *ORM) ReadPackagesLength(ctx context.Context, filterQuery *utils.FilterQuery, name *string, packagesType *string, userID *string) (*int64, error) {
 	var __PackagesLength int64
 
 	_Results := orm.DB.DB.Model(&models.Package{})
@@ -277,6 +281,10 @@ func (orm *ORM) ReadPackagesLength(ctx context.Context, filterQuery *utils.Filte
 
 	if name != nil {
 		_Results = _Results.Where("packages.Name = ?", name)
+	}
+
+	if userID != nil {
+		_Results = _Results.Where("packages.requested_by_id = ? OR packages.requested_by_id IS NULL", userID)
 	}
 
 	if packagesType != nil {

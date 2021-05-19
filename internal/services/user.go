@@ -251,7 +251,7 @@ func (orm *ORM) GetMe(ctx context.Context, userID string) (*GetMeType, error) {
 		}
 		return nil, err
 	}
-	fmt.Println(_User)
+
 	//check if the person is suspended or not
 	if _User.SuspendedAt != nil {
 		return nil, errors.New("AccountSuspended")
