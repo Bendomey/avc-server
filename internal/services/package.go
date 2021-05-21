@@ -22,7 +22,7 @@ type CustomPackageService struct {
 // PackageService inteface holds the Package-databse transactions of this controller
 type PackageService interface {
 	CreatePackage(context context.Context, name string, createdBy string, amountPerMonth *int, description *string, amountPerYear *int, customPackages []CustomPackageService) (*models.Package, error)
-	CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error)
+	CreateCustomPackage(context context.Context, createdBy string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error)
 	ApprovePackage(context context.Context, packageID string, approvedBy string, amountPerMonth int, amountPerYear int) (bool, error)
 	UpdatePackage(context context.Context, packageID string, name *string, description *string, amountPerMonth *int, amountPerYear *int) (bool, error)
 	DeletePackage(context context.Context, packageID string) (bool, error)
@@ -74,7 +74,7 @@ func (orm *ORM) CreatePackage(context context.Context, name string, createdBy st
 }
 
 // CreateCustomPackage adds a new package to the system
-func (orm *ORM) CreateCustomPackage(context context.Context, createdBy string, packageId string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error) {
+func (orm *ORM) CreateCustomPackage(context context.Context, createdBy string, customPackages []CustomPackageService, name *string, description *string) (*models.Package, error) {
 	var nameForCustomPackage string
 
 	if name != nil {

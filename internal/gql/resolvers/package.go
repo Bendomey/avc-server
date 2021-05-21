@@ -205,9 +205,6 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 			Type:        graphql.NewNonNull(schemas.PackageType),
 			Description: "Create Custom package",
 			Args: graphql.FieldConfigArgument{
-				"packageId": &graphql.ArgumentConfig{
-					Type: graphql.NewNonNull(graphql.ID),
-				},
 				"name": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
@@ -220,7 +217,6 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 			},
 			Resolve: utils.AuthenticateUser(
 				func(p graphql.ResolveParams, userData *utils.UserFromToken) (interface{}, error) {
-					packageID := p.Args["packageId"].(string)
 					customPackages := p.Args["packageServices"].([]interface{})
 					takeName, nameOk := p.Args["name"].(string)
 					takeDescription, descriptionOk := p.Args["description"].(string)
@@ -256,7 +252,7 @@ var packagesMutation = func(svcs services.Services) map[string]*graphql.Field {
 						description = nil
 					}
 
-					_Response, err := svcs.PackageServices.CreateCustomPackage(p.Context, userData.ID, packageID, customPackageConvertList, name, description)
+					_Response, err := svcs.PackageServices.CreateCustomPackage(p.Context, userData.ID, customPackageConvertList, name, description)
 					if err != nil {
 						return nil, err
 					}
