@@ -1,6 +1,10 @@
 package utils
 
-import "github.com/Bendomey/avc-server/pkg/paystack"
+import (
+	"fmt"
+
+	"github.com/Bendomey/avc-server/pkg/paystack"
+)
 
 var apiKey string
 var client *paystack.Client
@@ -12,6 +16,7 @@ func init() {
 }
 
 func InitializePayment(req paystack.TransactionRequest) (paystack.Response, error) {
+	fmt.Print(apiKey, client)
 	transaction, err := client.Transaction.Initialize(&req)
 	return transaction, err
 }
