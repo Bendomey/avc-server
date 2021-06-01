@@ -13,9 +13,6 @@ var SubscriptionType = graphql.NewObject(
 			"package": &graphql.Field{
 				Type: PackageType,
 			},
-			// "payment": &graphql.Field{
-			// 	Type: PaymentType,
-			// },
 			"status": &graphql.Field{
 				Type: graphql.NewNonNull(EnumForSubscriptionStatus),
 			},

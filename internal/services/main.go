@@ -20,6 +20,7 @@ type Services struct {
 	PackageServices        PackageService
 	ServiceServices        ServiceService
 	PackageServiceServices PackageServiceService
+	SubscriptionServices   SubscriptionService
 	ServicingServices      ServicingService
 }
 
@@ -46,6 +47,7 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 	serviceService := ServiceSvc(orm, rdb, mg)
 	packageServiceService := PackageServiceSvc(orm, rdb, mg)
 	servicingService := ServicingSvc(orm, rdb, mg)
+	subscriptionService := SubscriptionSvc(orm, rdb, mg)
 
 	return Services{
 		AdminServices:          adminService,
@@ -60,6 +62,7 @@ func Factory(orm *orm.ORM, rdb *redis.Client, mg mail.MailingService) Services {
 		PackageServices:        packageService,
 		ServiceServices:        serviceService,
 		PackageServiceServices: packageServiceService,
+		SubscriptionServices:   subscriptionService,
 		ServicingServices:      servicingService,
 	}
 }

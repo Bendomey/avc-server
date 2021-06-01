@@ -27,6 +27,7 @@ func ExposeSchema(services services.Services) []*graphql.Object {
 		ExposePackageResolver(services).Query,
 		ExposeServiceResolver(services).Query,
 		ExposePackageServiceResolver(services).Query,
+		ExposeSubscriptionResolver(services).Query,
 		ExposeServicingResolver(services).Query,
 	}
 
@@ -40,7 +41,7 @@ func ExposeSchema(services services.Services) []*graphql.Object {
 		ExposeFaqResolver(services).Mutation,
 		ExposeBlogPostResolver(services).Mutation,
 		ExposePackageResolver(services).Mutation,
-		ExposeServiceResolver(services).Mutation,
+		ExposeSubscriptionResolver(services).Mutation,
 		ExposeServicingResolver(services).Mutation,
 	}
 

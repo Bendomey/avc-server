@@ -10,9 +10,8 @@ import (
 // DBServiceToGQLUser transforms [user] db input to gql type
 func DBSubscriptionToGQLUser(i *models.Subscription) interface{} {
 	return map[string]interface{}{
-		"id":      i.ID.String(),
-		"package": DBPackageToGQLUser(&i.Package),
-		// "payment":      DBPaymentToGQLUser(&i.Payment),
+		"id":           i.ID.String(),
+		"package":      DBPackageToGQLUser(&i.Package),
 		"status":       fmt.Sprintf("%s", i.Status),
 		"createdBy":    DBUserToGQLUser(&i.CreatedBy),
 		"subscribedAt": i.SubscribeAt,
