@@ -17,11 +17,10 @@ func init() {
 	client = paystack.NewClient(nil, paystack.SecretKey(apiKey))
 }
 
-func InitializePayment(context context.Context, req paystack.TransactionRequest) (*paystack.Response, error) {
+func InitializePayment(context context.Context, req paystack.TransactionRequest) (*paystack.TransactionAuthorization, error) {
 	fmt.Print(apiKey, client)
-	auth, transaction, err := client.Transaction.Initialize(context, &req)
-	fmt.Print("transaction authorization", auth)
-	return transaction, err
+	auth, _, err := client.Transaction.Initialize(context, &req)
+	return auth, err
 }
 
 func VerifyPayment(reference string) (*paystack.Response, error) {

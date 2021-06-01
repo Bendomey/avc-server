@@ -67,7 +67,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	//initialize the payment
 	currency := "GHS"
 	amountHere := fmt.Sprintf("%f", __payment.Amount)
-	ref := "hello"
+	ref := "hellow"
 	response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
 		Amount:    &amountHere,
 		Currency:  &currency,
@@ -85,8 +85,8 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 
 	fmt.Print("Payment response", response)
 	// __Payment.AuthorizationUrl = response.authorization_url
-	__payment.AuthorizationUrl = ""
-	__payment.AccessCode = ""
+	__payment.AuthorizationUrl = *response.AuthorizationUrl
+	__payment.AccessCode = *response.AccessCode
 
 	//save
 	if subErr := orm.DB.DB.Select("PackageID", "CreatedByID", "SubscribeAt", "ExpiresAt").Create(&__subscription).Error; subErr != nil {
