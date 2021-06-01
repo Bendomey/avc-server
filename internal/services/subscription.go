@@ -65,7 +65,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	__payment.SubscriptionID = &serv
 
 	//initialize the payment
-	currency := " USD"
+	currency := "USD"
 	amountHere := fmt.Sprintf("%f", __payment.Amount)
 	ref := __payment.Code.String()
 	response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
