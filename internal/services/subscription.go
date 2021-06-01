@@ -35,7 +35,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 
 	//find package
 	var __package models.Package
-	packageErr := orm.DB.DB.First(&__package, "id = ?", packageID).Error
+	packageErr := orm.DB.DB.First(&__package, "id = ?", packageID).Select("AmountPerMonth", "AmountPerYear").Error
 	if errors.Is(packageErr, gorm.ErrRecordNotFound) {
 		return nil, errors.New("PackageNotFound")
 	}
@@ -57,7 +57,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	if numberOfMonths == 1 {
 		amount = float64(*__package.AmountPerMonth)
 	} else {
-		amount = float64(*__package.AmountPerMonth)
+		amount = float64(*__package.AmountPerYear)
 	}
 	__payment.Amount = amount
 
@@ -67,7 +67,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	//initialize the payment
 	currency := "GHS"
 	amountHere := fmt.Sprintf("%f", __payment.Amount)
-	ref := "hellow"
+	ref := __payment.Code.String()
 	response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
 		Amount:    &amountHere,
 		Currency:  &currency,
@@ -84,7 +84,6 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	}
 
 	fmt.Print("Payment response", response)
-	// __Payment.AuthorizationUrl = response.authorization_url
 	__payment.AuthorizationUrl = *response.AuthorizationUrl
 	__payment.AccessCode = *response.AccessCode
 
@@ -93,7 +92,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 		return nil, subErr
 	}
 
-	if err := orm.DB.DB.Select("CreatedByID", "Amount", "SubscriptionID").Create(&__payment).Error; err != nil {
+	if err := orm.DB.DB.Select("CreatedByID", "Amount", "SubscriptionID", "AuthorizationUrl", "AccessCode").Create(&__payment).Error; err != nil {
 		// raven.CaptureError(err, nil)
 		fmt.Print(payErr)
 		return nil, err

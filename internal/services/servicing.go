@@ -150,11 +150,11 @@ func (orm *ORM) CreateServicing(context context.Context, serviceID string, creat
 
 		fmt.Print("Payment response", response)
 		// __Payment.AuthorizationUrl = response.authorization_url
-		__Payment.AuthorizationUrl = ""
-		__Payment.AccessCode = ""
+		__Payment.AuthorizationUrl = *response.AuthorizationUrl
+		__Payment.AccessCode = *response.AccessCode
 
 		// save the payment record
-		if err := orm.DB.DB.Select("Amount", "CreatedByID", "ServicingID").Create(&__Payment).Error; err != nil {
+		if err := orm.DB.DB.Select("Amount", "CreatedByID", "ServicingID", "AuthorizationUrl", "AccessCode").Create(&__Payment).Error; err != nil {
 			raven.CaptureError(err, nil)
 			return nil, err
 		}
