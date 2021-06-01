@@ -131,7 +131,7 @@ func (orm *ORM) CreateServicing(context context.Context, serviceID string, creat
 		__Payment.ServicingID = &serv
 
 		//initialize the payment
-		currency := " USD"
+		currency := "USD"
 		amountHere := fmt.Sprintf("%f", *__Service.Price)
 		ref := __Payment.Code.String()
 		response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
