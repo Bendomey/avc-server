@@ -15,9 +15,9 @@ type Payment struct {
 	BaseModelSoftDelete
 	Code             uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Amount           float64   `gorm:"not null;"`
-	ServicingID      *string   `gorm:"not null;"`
+	ServicingID      *string
 	Servicing        *Servicing
-	SubscriptionID   *string `gorm:"not null;"`
+	SubscriptionID   *string
 	Subscription     *Subscription
 	AuthorizationUrl string        `gorm:"not null;"`
 	AccessCode       string        `gorm:"not null;"`
