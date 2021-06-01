@@ -9,10 +9,10 @@ import (
 	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/orm/models"
-	"github.com/Bendomey/avc-server/pkg/paystack"
 	"github.com/Bendomey/avc-server/pkg/utils"
 	"github.com/getsentry/raven-go"
 	"github.com/go-redis/redis/v8"
+	"github.com/kehindesalaam/go-paystack/paystack"
 	"gorm.io/gorm"
 )
 
@@ -131,11 +131,17 @@ func (orm *ORM) CreateServicing(context context.Context, serviceID string, creat
 		__Payment.ServicingID = &serv
 
 		//initialize the payment
-		response, payErr := utils.InitializePayment(paystack.TransactionRequest{
-			Amount:    float32(*__Service.Price),
-			Currency:  "USD",
-			Reference: __Payment.Code.String(),
-			Email:     __Customer.User.Email,
+		currency := " USD"
+		amountHere := fmt.Sprintf("%f", *__Service.Price)
+		ref := __Payment.Code.String()
+		response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
+			Amount:    &amountHere,
+			Currency:  &currency,
+			Reference: &ref,
+			Email:     &__Customer.User.Email,
+			Metadata:  paystack.Metadata{},
+			Channels:  []string{"card"},
+			// CallbackURL:       "",
 		})
 		if payErr != nil {
 			raven.CaptureError(payErr, nil)

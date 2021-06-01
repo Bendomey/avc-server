@@ -9,9 +9,9 @@ import (
 	"github.com/Bendomey/avc-server/internal/mail"
 	"github.com/Bendomey/avc-server/internal/orm"
 	"github.com/Bendomey/avc-server/internal/orm/models"
-	"github.com/Bendomey/avc-server/pkg/paystack"
 	"github.com/Bendomey/avc-server/pkg/utils"
 	"github.com/go-redis/redis/v8"
+	"github.com/kehindesalaam/go-paystack/paystack"
 	"gorm.io/gorm"
 )
 
@@ -65,11 +65,17 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	__payment.SubscriptionID = &serv
 
 	//initialize the payment
-	response, payErr := utils.InitializePayment(paystack.TransactionRequest{
-		Amount:    float32(__payment.Amount),
-		Currency:  "USD",
-		Reference: __payment.Code.String(),
-		Email:     __Customer.Email,
+	currency := " USD"
+	amountHere := fmt.Sprintf("%f", __payment.Amount)
+	ref := __payment.Code.String()
+	response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
+		Amount:    &amountHere,
+		Currency:  &currency,
+		Reference: &ref,
+		Email:     &__Customer.Email,
+		Metadata:  paystack.Metadata{},
+		Channels:  []string{"card"},
+		// CallbackURL:       "",
 	})
 	if payErr != nil {
 		// raven.CaptureError(payErr, nil)
