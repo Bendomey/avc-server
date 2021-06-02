@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	// "github.com/Bendomey/avc-server/pkg/paystack"
 	"github.com/kehindesalaam/go-paystack/paystack"
 )
 
