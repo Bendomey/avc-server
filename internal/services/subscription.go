@@ -98,6 +98,6 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 		return nil, err
 	}
 
-	// return payment
+	// return payment and null
 	return &__payment, nil
 }
