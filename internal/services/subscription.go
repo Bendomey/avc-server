@@ -67,7 +67,7 @@ func (orm *ORM) SubscribeToPackage(context context.Context, packageID string, nu
 	//initialize the payment
 	currency := "GHS"
 	amountHere := fmt.Sprintf("%f", __payment.Amount)
-	ref := "helohi"
+	ref := "helohihi"
 	response, payErr := utils.InitializePayment(context, paystack.TransactionRequest{
 		Amount:    &amountHere,
 		Currency:  &currency,

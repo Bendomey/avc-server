@@ -16,9 +16,9 @@ type Payment struct {
 	Code             uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Amount           float64   `gorm:"not null;"`
 	ServicingID      *string
-	Servicing        *Servicing
+	Servicing        Servicing
 	SubscriptionID   *string
-	Subscription     *Subscription
+	Subscription     Subscription
 	AuthorizationUrl string        `gorm:"not null;"`
 	AccessCode       string        `gorm:"not null;"`
 	Status           PaymentStatus `gorm:"default:PENDING"`
