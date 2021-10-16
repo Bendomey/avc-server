@@ -331,8 +331,7 @@ func (orm *ORM) ReadAdminsLength(ctx context.Context, filterQuery *utils.FilterQ
 	}
 
 	//continue the filtration
-	_Results = _Results.Joins("CreatedBy").
-		Count(&_CountriesLength)
+	_Results = _Results.Joins("CreatedBy").Count(&_CountriesLength)
 
 	if _Results.Error != nil {
 		return nil, _Results.Error

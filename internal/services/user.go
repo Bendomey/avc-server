@@ -167,7 +167,6 @@ func (orm *ORM) CreateUser(ctx context.Context, userType string, email string, p
 	}
 
 	// send code to email
-	log.Println("Generated code :: ", code)
 	subject := "Welcome To African Venture Counsel - Verify Your Account"
 	body := fmt.Sprintf("Use this code '%s' as your verification code on our platform ", code)
 	go orm.mg.SendTransactionalMail(ctx, subject, body, email)
